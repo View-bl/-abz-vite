@@ -1,0 +1,19 @@
+.preloader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.spinner-svg {
+  transform-origin: center;
+  animation: spin 1s linear infinite;
+  width: 48px;
+  height: 48px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

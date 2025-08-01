@@ -1,0 +1,206 @@
+.signup-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  /* секція реєстрації — вертикальне розміщення, центровані елементи, відступ між блоками */
+}
+
+.section-ti {
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.87);
+  /* заголовок секції — стиль тексту, центрування, колір */
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto 100px;
+  /* форма реєстрації — вертикальний флекс, повна ширина, відступ знизу */
+}
+
+.signup-form input[type="text"],
+.signup-form input[type="email"],
+.signup-form input[type="tel"] {
+  width: 100%;
+  padding: 0 16px;
+  border: 1px solid #d0cfcf;
+  border-radius: 4px;
+  height: 55px;
+  margin-bottom: 49px;
+  /* текстові поля форми — ширина 100%, внутрішні відступи, рамка, висота, відступ знизу */
+}
+
+.signup-form input[type="tel"] {
+  margin-bottom: 42px;
+  /* поле для телефону — окремий нижній відступ */
+}
+
+.phone-hint {
+  position: absolute;
+  left: 16px;
+  bottom: 23px;
+  font-size: 12px;
+  color: #7e7e7e;
+  pointer-events: none;
+  line-height: 1.16;
+  /* підказка для телефону — позиціювання, розмір, колір, відсутність реакції на події */
+}
+.phone-wrapper {
+  position: relative;
+  /* обгортка для телефону — позиціювання для підказки */
+}
+
+.radio-group {
+  height: 161px;
+  margin-bottom: 48px;
+  /* група радіокнопок — фіксована висота, відступ знизу */
+}
+
+.legend {
+  font-family: "Nunito", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.75;
+  color: rgba(0, 0, 0, 0.87);
+  margin-bottom: 9px;
+  /* заголовок групи радіокнопок — стиль тексту, відступ знизу */
+}
+
+.signup-form fieldset {
+  border: none;
+  padding: 0;
+  /* скидання стандартної рамки і відступів для fieldset */
+}
+
+.signup-form label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 7px;
+  height: 26px;
+  /* мітки форми — горизонтальний флекс, відступи, висота */
+}
+
+.signup-form input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #d0cece;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  /* радіокнопки — розмір, кругла форма, стилізація без дефолтного вигляду, курсор */
+}
+
+.signup-form input[type="radio"]:checked {
+  border-color: #00bdd3;
+  background-color: #00bdd3;
+  box-shadow: inset 0 0 0 4px #fff;
+  /* стиль вибраної радіокнопки — колір рамки і фону, внутрішня тінь */
+}
+
+.file-upload {
+  display: flex;
+  width: 100%;
+  height: 54px;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 50px;
+  /* контейнер для завантаження файлу — горизонтальний флекс, розміри, скруглення, приховування переповнення, відступ знизу */
+}
+
+.upload-button {
+  flex: 0 0 83px;
+  border: 1.5px solid rgba(0, 0, 0, 0.87);
+  border-radius: 4px 0 0 4px;
+  background-color: white;
+  color: rgba(0, 0, 0, 0.87);
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 14px 15px;
+  /* кнопка завантаження — фіксована ширина, стилі рамки, фон, колір, центрування, курсор, відступи */
+}
+
+.upload-text {
+  flex: 1;
+  height: 54px;
+  border: 1px solid #d0cfcf;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+  color: #7e7e7e;
+  box-sizing: border-box;
+  background-color: white;
+  border-left-width: 0;
+  /* текстовий блок завантаження — займає решту простору, стилі рамки, фон, відступи, колір */
+}
+
+.file-upload input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+  /* інпут файлу — повне покриття контейнера, прозорий, курсор */
+}
+
+.signup-button {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100px;
+  height: 34px;
+  border-radius: 80px;
+  display: flex;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.87);
+  border: none;
+  background-color: #888;
+  box-sizing: border-box;
+  text-align: center;
+  /* кнопка відправки — центрована, фіксований розмір, кругла, стилі кольору та фону, курсор */
+}
+
+.signup-button:hover,
+.signup-button:focus {
+  background-color: #f4e041;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* ефект при наведенні/фокусі — колір фону, тінь */
+}
+
+@media (min-width: 768px) {
+  .signup-form {
+    padding-left: 162px;
+    padding-right: 162px;
+  }
+  .phone-hint {
+    bottom: 28px;
+  }
+}
+@media (min-width: 1024px) {
+  .signup-form {
+    padding-left: 262px;
+    padding-right: 262px;
+  }
+  .phone-hint {
+    bottom: 24px;
+  }
+}
+@media (min-width: 1170px) {
+  .signup-form {
+    padding-left: 395px;
+    padding-right: 395px;
+  }
+}

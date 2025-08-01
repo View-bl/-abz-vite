@@ -1,0 +1,108 @@
+.hero {
+  background-image: image-set(
+    url("/Group1xmob.jpg") 1x,
+    url("/Group2хmob.jpg") 2x
+  );
+  background-size: cover;
+  background-position: center;
+  padding-top: 40px;
+  margin-bottom: 140px;
+  box-sizing: border-box;
+  margin-left: -16px;
+  margin-right: -16px;
+  min-width: 360px;
+  padding-top: 60px;
+  /* фон промо — адаптивні зображення, покриття, центр, відступи зверху та знизу, від'ємні бокові марджини для ширшого охоплення, мінімальна ширина */
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 16px 71px 16px;
+  /* внутрішній контент промо — вертикальне розміщення, центр, відступи */
+}
+
+.hero-title {
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 21px;
+  /* заголовок промо — шрифт, розмір, лінійна висота, центрування, білий колір, відступ знизу */
+}
+
+.hero-description {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.62;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 32px;
+  /* опис промо — стиль тексту, колір, відступ знизу */
+}
+
+.button {
+  width: 100px;
+  height: 34px;
+  border-radius: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.87);
+  border: none;
+  background-color: #f4e041;
+  box-sizing: border-box;
+  text-align: center;
+  /* кнопка — розміри, округлення, центрування контенту, колір тексту, фон, без рамки */
+}
+.button:hover,
+.button:focus {
+  box-shadow: 0 4px 12px rgba(186, 45, 6, 0.15);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #ffe302;
+  /* ефект наведеня і фокусу — тінь та зміна кольору */
+}
+
+@media (min-width: 768px) {
+  .hero {
+    background-image: image-set(
+      url("/Banner1x.jpg") 1x,
+      url("/Banner2x.jpg") 2x
+    );
+    margin-left: -32px;
+    margin-right: -32px;
+    padding-top: 60px;
+  }
+  .hero-content {
+    padding: 89px 194px 88px 194px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    background-image: image-set(url("/1024x1.jpg") 1x, url("/1024x2.jpg") 2x);
+    padding-top: 60px;
+    margin-left: -60px;
+    margin-right: -60px;
+  }
+  .hero-content {
+    padding: 164px 322px 163px 322px;
+    height: 650px;
+  }
+}
+@media (min-width: 1170px) {
+  .hero {
+    background-image: image-set(
+      url("/Rectangle1x.jpg") 1x,
+      url("/Rectangle2x.jpg") 2x
+    );
+    width: 1170px;
+    margin: 0 auto;
+    margin-bottom: 140px;
+  }
+  .hero-content {
+    padding: 164px 395px 163px 395px;
+  }
+}
