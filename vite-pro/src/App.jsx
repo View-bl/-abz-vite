@@ -3,7 +3,6 @@ import Header from "./components/Header/Header";
 import Hero from "./components/Hero/Hero";
 import Users from "./components/Users/Users";
 import SignupForm from "./components/SignupForm/SignupForm";
-import Footer from "./components/Footer/Footer";
 import Preloader from "./components/Preloader/Preloader";
 
 function App() {
@@ -25,9 +24,6 @@ function App() {
         <Hero />
         <Users />
         <SignupForm />
-      </div>
-      <div className="container">
-        <Footer />
       </div>
     </>
   );

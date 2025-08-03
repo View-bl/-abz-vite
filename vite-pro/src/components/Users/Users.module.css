@@ -14,7 +14,7 @@
   line-height: 1;
   text-align: center;
   color: rgba(0, 0, 0, 0.87);
-  /* заголовок секції — великий текст, центрований */
+ 
 }
 
 .user-cards {
@@ -34,9 +34,11 @@
   cursor: pointer;
   color: rgba(0, 0, 0, 0.87);
   border: none;
+  font-size: 16px;
   background-color: #f4e041;
-  box-sizing: border-box;
+  padding: 4px 18px 4px 18px;
   text-align: center;
+  
   /* кнопка "Показати ще" — кругла, центрована, жовта */
 }
 .show-more-button:hover,

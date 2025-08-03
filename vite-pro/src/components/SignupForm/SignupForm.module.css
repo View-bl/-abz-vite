@@ -3,7 +3,6 @@
   flex-direction: column;
   align-items: center;
   gap: 50px;
-  /* секція реєстрації — вертикальне розміщення, центровані елементи, відступ між блоками */
 }
 
 .section-ti {
@@ -12,7 +11,6 @@
   line-height: 1;
   text-align: center;
   color: rgba(0, 0, 0, 0.87);
-  /* заголовок секції — стиль тексту, центрування, колір */
 }
 
 .signup-form {
@@ -20,70 +18,161 @@
   flex-direction: column;
   width: 100%;
   margin: 0 auto 100px;
-  /* форма реєстрації — вертикальний флекс, повна ширина, відступ знизу */
 }
 
-.signup-form input[type="text"],
-.signup-form input[type="email"],
-.signup-form input[type="tel"] {
+.input-wrapper {
+  position: relative;
+}
+.input-wrapper:nth-child(1),
+.input-wrapper:nth-child(2) {
+  margin-bottom: 50px;
+}
+
+.input-wrapper:nth-child(3) {
+  margin-bottom: 43px;
+}
+
+.input {
   width: 100%;
-  padding: 0 16px;
+  height: 54px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  padding-left: 16px;
+  font-size: 16px;
   border: 1px solid #d0cfcf;
   border-radius: 4px;
-  height: 55px;
-  margin-bottom: 49px;
-  /* текстові поля форми — ширина 100%, внутрішні відступи, рамка, висота, відступ знизу */
+  transition: border-color 0.2s ease;
 }
 
-.signup-form input[type="tel"] {
-  margin-bottom: 42px;
-  /* поле для телефону — окремий нижній відступ */
+.input::placeholder {
+  color: transparent;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #f8f8f8 inset !important;
+}
+
+.floatingLabel {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-40%);
+  color: #7e7e7e;
+  font-size: 16px;
+  pointer-events: none;
+  transition: all 0.2s ease-out;
+  padding: 0;
+  background-color: #f8f8f8;
+  user-select: none;
+  white-space: nowrap;
+  border-radius: 4px;
+}
+
+.input:focus + .floatingLabel,
+.input:not(:placeholder-shown) + .floatingLabel {
+  top: -3px;
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+.errorInput {
+  border-color: #cb3d40 !important;
+  height: 54px;
+}
+
+.errorInput:focus + .floatingLabel,
+.errorInput:not(:placeholder-shown) + .floatingLabel {
+  color: #cb3d40;
+  top: 2px;
+}
+
+.error {
+  position: absolute;
+  padding-top: 4px;
+  padding-left: 16px;
+  left: 0;
+  font-size: 12px;
+  color: #cb3d40;
+  line-height: 1;
+  pointer-events: none;
+}
+.photoError {
+  position: absolute;
+  top: 53px;
+  font-size: 12px;
+  color: #cb3d40;
+  padding-left: 16px;
+  padding-top: 4px;
+}
+
+.phone-wrapper {
+  position: relative;
 }
 
 .phone-hint {
   position: absolute;
   left: 16px;
-  bottom: 23px;
+  top: 60px;
   font-size: 12px;
   color: #7e7e7e;
-  pointer-events: none;
   line-height: 1.16;
-  /* підказка для телефону — позиціювання, розмір, колір, відсутність реакції на події */
-}
-.phone-wrapper {
-  position: relative;
-  /* обгортка для телефону — позиціювання для підказки */
 }
 
 .radio-group {
   height: 161px;
   margin-bottom: 48px;
-  /* група радіокнопок — фіксована висота, відступ знизу */
 }
 
 .legend {
-  font-family: "Nunito", sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.75;
   color: rgba(0, 0, 0, 0.87);
-  margin-bottom: 9px;
-  /* заголовок групи радіокнопок — стиль тексту, відступ знизу */
+  margin-bottom: 11px;
+  padding: 0;
+  width: 325px;
+  height: 25px;
 }
+
+
 
 .signup-form fieldset {
   border: none;
   padding: 0;
-  /* скидання стандартної рамки і відступів для fieldset */
+  margin: 0;
+  margin-bottom: 47px;
 }
 
 .signup-form label {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 7px;
   height: 26px;
-  /* мітки форми — горизонтальний флекс, відступи, висота */
+}
+
+.activeButton {
+  background-color: #f4e041;
+}
+
+/* Трохи яскравіший жовтий при ховері */
+.activeButton:hover {
+  background-color: #ffe302;
+}
+
+/* Сіра кнопка коли форма невалідна */
+.inactiveButton {
+  background-color: #b4b4b4;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+/* Якщо хочеш, щоб при наведенні на неактивну кнопу нічого не змінювалось */
+.inactiveButton:hover {
+  background-color: #b4b4b4;
+  cursor: not-allowed;
+}
+
+.radioLabel {
+  align-items: center;
+  margin-bottom: 7px;
 }
 
 .signup-form input[type="radio"] {
@@ -93,29 +182,28 @@
   border-radius: 50%;
   appearance: none;
   cursor: pointer;
-  /* радіокнопки — розмір, кругла форма, стилізація без дефолтного вигляду, курсор */
+  margin-right: 12px;
 }
 
 .signup-form input[type="radio"]:checked {
   border-color: #00bdd3;
   background-color: #00bdd3;
   box-shadow: inset 0 0 0 4px #fff;
-  /* стиль вибраної радіокнопки — колір рамки і фону, внутрішня тінь */
 }
 
 .file-upload {
+  align-items: center;
+
   display: flex;
   width: 100%;
   height: 54px;
   border-radius: 4px;
-  overflow: hidden;
+  overflow: visible;
   margin-bottom: 50px;
-  /* контейнер для завантаження файлу — горизонтальний флекс, розміри, скруглення, приховування переповнення, відступ знизу */
 }
 
 .upload-button {
-  flex: 0 0 83px;
-  border: 1.5px solid rgba(0, 0, 0, 0.87);
+  border: 1px solid rgba(0, 0, 0, 0.87);
   border-radius: 4px 0 0 4px;
   background-color: white;
   color: rgba(0, 0, 0, 0.87);
@@ -126,22 +214,35 @@
   box-sizing: border-box;
   cursor: pointer;
   padding: 14px 15px;
-  /* кнопка завантаження — фіксована ширина, стилі рамки, фон, колір, центрування, курсор, відступи */
+  transition: border-color 0.3s ease;
+  height: 54px;
+  margin-left: -1px;
+}
+
+.uploadButtonNoBorder {
+  height: 54px;
+  border-color: transparent;
+  border: 2px solid #cb3d40 !important;
+  border: none;
 }
 
 .upload-text {
   flex: 1;
   height: 54px;
-  border: 1px solid #d0cfcf;
   border-radius: 0 4px 4px 0;
   display: flex;
   align-items: center;
-  padding-left: 15px;
+  padding: 14px 15px;
   color: #7e7e7e;
   box-sizing: border-box;
   background-color: white;
   border-left-width: 0;
-  /* текстовий блок завантаження — займає решту простору, стилі рамки, фон, відступи, колір */
+  border: 1px solid #d0cfcf;
+  border-left: none;
+}
+.upload-text-error {
+  border: 2px solid #cb3d40 !important;
+  border-left: none !important;
 }
 
 .file-upload input[type="file"] {
@@ -152,52 +253,45 @@
   opacity: 0;
   cursor: pointer;
   z-index: 2;
-  /* інпут файлу — повне покриття контейнера, прозорий, курсор */
 }
 
+/* Кнопка сабміту */
 .signup-button {
-  margin-left: auto;
-  margin-right: auto;
   width: 100px;
   height: 34px;
+  margin: 0 auto;
   border-radius: 80px;
+  font-size: 16px;
   display: flex;
-  cursor: pointer;
   justify-content: center;
   align-items: center;
-  color: rgba(0, 0, 0, 0.87);
   border: none;
-  background-color: #888;
-  box-sizing: border-box;
-  text-align: center;
-  /* кнопка відправки — центрована, фіксований розмір, кругла, стилі кольору та фону, курсор */
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.87);
 }
-
-.signup-button:hover,
-.signup-button:focus {
-  background-color: #f4e041;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  /* ефект при наведенні/фокусі — колір фону, тінь */
-}
-
+/* Адаптив */
 @media (min-width: 768px) {
   .signup-form {
     padding-left: 162px;
     padding-right: 162px;
   }
-  .phone-hint {
-    bottom: 28px;
-  }
 }
+
 @media (min-width: 1024px) {
   .signup-form {
     padding-left: 262px;
     padding-right: 262px;
   }
   .phone-hint {
-    bottom: 24px;
+    top: 59px;
+  }
+
+  .phone-hint {
+    bottom: 16px;
   }
 }
+
 @media (min-width: 1170px) {
   .signup-form {
     padding-left: 395px;

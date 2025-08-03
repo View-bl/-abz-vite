@@ -1,11 +1,10 @@
 import UserCard from "../UserCard/UserCard";
 import styles from "./Users.module.css";
-
 import avatars from "../../assets/avatars";
-    
+
 const usersData = [
   {
-    name: "Salvador Stewart Flynn Thomas ",
+    name: "Salvador Stewart Flynn Thomas",
     details: `Frontend Developer Frontend ...<br />frontend_develop@gmail.com<br />+38 (098) 278 44 24`,
   },
   {
