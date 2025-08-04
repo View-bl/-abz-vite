@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  id: { type: Number, unique: true }, // унікальний числовий ідентифікатор
+  id: { type: Number, unique: true }, 
   name: { type: String, required: true, minlength: 2, maxlength: 60 },
   email: {
     type: String,

@@ -1,24 +1,12 @@
+// SignupForm.jsx
 import styles from "./SignupForm.module.css";
 import { useEffect, useState } from "react";
 import { getToken } from "../../services/apiToken";
 import { postUser } from "../../services/apiUsers";
 import { validateForm } from "../../utils/validation";
+import successIcon from "../../assets/images/User-successfully-registered.svg";
 
 function SignupForm() {
-  const isFormValid = () => {
-    return (
-      form.name.trim().length >= 2 &&
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
-      /^\+38\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/.test(
-        form.phone
-      ) &&
-      selectedPosition &&
-      form.photo &&
-      form.photo.type === "image/jpeg" &&
-      form.photo.size <= 5 * 1024 * 1024
-    );
-  };
-
   const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [form, setForm] = useState({
@@ -52,6 +40,20 @@ function SignupForm() {
     }
   };
 
+  const isFormValid = () => {
+    return (
+      form.name.trim().length >= 2 &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) &&
+      /^\+38\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/.test(
+        form.phone
+      ) &&
+      selectedPosition &&
+      form.photo &&
+      form.photo.type === "image/jpeg" &&
+      form.photo.size <= 5 * 1024 * 1024
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -68,6 +70,7 @@ function SignupForm() {
 
     try {
       const { token } = await getToken();
+
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("email", form.email);
@@ -92,8 +95,17 @@ function SignupForm() {
         setMessage(result.message || "Registration failed.");
       }
     } catch (error) {
-      setMessage("Error submitting form.");
-      console.error(error);
+      console.error("Submit error:", error);
+
+      // Якщо в повідомленні є відомий текст, змінюємо його для користувача
+      if (
+        error.message.includes("User with this phone or email already exist") ||
+        error.message.toLowerCase().includes("already exist")
+      ) {
+        setMessage("User with this email or phone already exists.");
+      } else {
+        setMessage(error.message || "Error submitting form.");
+      }
     } finally {
       setLoading(false);
     }
@@ -102,7 +114,9 @@ function SignupForm() {
   return (
     <section id="signup" className={styles["signup-section"]}>
       <h3 className={styles["section-ti"]}>Working with POST request</h3>
+
       <form className={styles["signup-form"]} onSubmit={handleSubmit}>
+        {/* Name */}
         <div className={styles["input-wrapper"]}>
           <input
             type="text"
@@ -122,6 +136,7 @@ function SignupForm() {
           {errors.name && <p className={styles.error}>{errors.name}</p>}
         </div>
 
+        {/* Email */}
         <div className={styles["input-wrapper"]}>
           <input
             type="email"
@@ -141,6 +156,7 @@ function SignupForm() {
           {errors.email && <p className={styles.error}>{errors.email}</p>}
         </div>
 
+        {/* Phone */}
         <div
           className={`${styles["phone-wrapper"]} ${styles["input-wrapper"]}`}
         >
@@ -167,6 +183,7 @@ function SignupForm() {
           {errors.phone && <p className={styles.error}>{errors.phone}</p>}
         </div>
 
+        {/* Radio buttons */}
         <fieldset className={styles["radio-group"]}>
           <legend
             className={styles.legend}
@@ -188,6 +205,7 @@ function SignupForm() {
           ))}
         </fieldset>
 
+        {/* File upload */}
         <div className={styles["input-wrapper"]}>
           <div
             className={`${styles["file-upload"]} ${
@@ -231,6 +249,8 @@ function SignupForm() {
             )}
           </div>
         </div>
+
+        {/* Submit */}
         <button
           type="submit"
           className={`${styles["signup-button"]} ${
@@ -242,9 +262,31 @@ function SignupForm() {
         >
           {loading ? "Submitting..." : "Sign up"}
         </button>
-
-        {message && <p>{message}</p>}
       </form>
+
+      {/* Success / Error message */}
+      {message && (
+        <div className={styles.successMessageContainer}>
+          {message === "User successfully registered!" ? (
+            <>
+              <p className={styles.successMessage}>{message}</p>
+              <img
+                src={successIcon}
+                alt="Success"
+                className={styles.successIcon}
+                width={64}
+                height={64}
+              />
+            </>
+          ) : (
+            <p className={styles.errorMessage}>{message}</p>
+          )}
+        </div>
+      )}
+
+      <p className={styles.testSignature}>
+        © abz.agency specially for the test task
+      </p>
     </section>
   );
 }

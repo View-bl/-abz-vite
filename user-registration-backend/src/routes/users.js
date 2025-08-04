@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({
+const upload = multer({ 
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
@@ -173,7 +173,7 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
       email,
       phone,
       position_id: parseInt(position_id),
-      position: "Unknown", // Тимчасово, доки не зробиш мапінг position_id → position
+      position: "Unknown", 
       registration_timestamp: Math.floor(Date.now() / 1000),
       photo: `${req.protocol}://${req.get("host")}/uploads/${
         photoFile.filename

@@ -17,7 +17,6 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin: 0 auto 100px;
 }
 
 .input-wrapper {
@@ -134,8 +133,6 @@ input:-webkit-autofill {
   height: 25px;
 }
 
-
-
 .signup-form fieldset {
   border: none;
   padding: 0;
@@ -230,8 +227,6 @@ input:-webkit-autofill {
   flex: 1;
   height: 54px;
   border-radius: 0 4px 4px 0;
-  display: flex;
-  align-items: center;
   padding: 14px 15px;
   color: #7e7e7e;
   box-sizing: border-box;
@@ -239,7 +234,15 @@ input:-webkit-autofill {
   border-left-width: 0;
   border: 1px solid #d0cfcf;
   border-left: none;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  display: block;
+  line-height: 26px;
 }
+
 .upload-text-error {
   border: 2px solid #cb3d40 !important;
   border-left: none !important;
@@ -269,6 +272,35 @@ input:-webkit-autofill {
   transition: background-color 0.3s ease;
   cursor: pointer;
   color: rgba(0, 0, 0, 0.87);
+  margin-bottom: 100px;
+}
+
+.successMessage {
+  font-size: 40px;
+  line-height: 1;
+  text-align: center;
+  margin-bottom: 50px;
+}
+.successMessageContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.successIcon {
+  width: 328px;
+  height: 290px;
+  margin-bottom: 100px;
+}
+.testSignature {
+  height: 60px;
+  width: 100%;
+  padding-top: 17px;
+  padding-bottom: 17px;
+  border-top: 1px solid #d0cfcf;
+  border-right: none;
+  border-left: none;
+  border-bottom: none;
 }
 /* Адаптив */
 @media (min-width: 768px) {

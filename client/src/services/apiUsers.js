@@ -6,19 +6,31 @@ export const getUsers = async (page = 1, count = 6) => {
   return await res.json();
 };
 
+// apiUsers.js
 export const postUser = async (formData, token) => {
   const res = await fetch("/api/users", {
     method: "POST",
     headers: {
-      Token: token,
+      Authorization: `Bearer ${token}`,
     },
     body: formData,
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(`Request failed with status ${res.status}: ${errorText}`);
+    let errorData;
+    try {
+      errorData = await res.json();
+    } catch {
+      errorData = null;
+    }
+
+    if (errorData && errorData.message) {
+      throw new Error(errorData.message);
+    } else {
+      throw new Error(`Request failed with status ${res.status}`);
+    }
   }
 
   return await res.json();
 };
+
