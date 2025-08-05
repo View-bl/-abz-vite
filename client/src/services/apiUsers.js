@@ -1,12 +1,17 @@
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+
 export const getUsers = async (page = 1, count = 6) => {
-  const res = await fetch(`/api/users?page=${page}&count=${count}`);
+  const res = await fetch(
+    `${API_BASE_URL}/api/users?page=${page}&count=${count}`
+  );
   if (!res.ok) {
     throw new Error("Failed to fetch users");
   }
   return await res.json();
 };
+
 export const postUser = async (formData, token) => {
-  const res = await fetch("/api/users", {
+  const res = await fetch(`${API_BASE_URL}/api/users`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -31,4 +36,3 @@ export const postUser = async (formData, token) => {
 
   return await res.json();
 };
-

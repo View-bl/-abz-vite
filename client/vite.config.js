@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react(), svgr()],
   server: {
     proxy: {
-      "/api": "http://localhost:3000",
+      "/api": "https://abz-vite.onrender.com",
     },
   },
 });

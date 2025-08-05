@@ -6,7 +6,6 @@ import { checkToken } from "../middleware/checkToken.js";
 
 const router = express.Router();
 
-// Налаштування multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => {
@@ -17,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (allowedTypes.includes(file.mimetype)) {
@@ -28,17 +27,14 @@ const upload = multer({
   },
 });
 
-// GET /users?count=5&page=1
 router.get("/", async (req, res) => {
   try {
     const rawPage = req.query.page;
     const rawCount = req.query.count;
 
-    // Перетворюємо на цілі числа
     const page = parseInt(rawPage);
     const count = parseInt(rawCount);
 
-    // Валідація
     const fails = {};
 
     if (!rawPage || isNaN(page) || page < 1 || !Number.isInteger(page)) {
@@ -101,7 +97,16 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET /users/:id
+router.get("/checkfields", async (req, res) => {
+  try {
+    const users = await User.find().limit(5);
+    res.json(users);
+  } catch (error) {
+    console.error("GET /checkfields error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get("/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) {
@@ -133,7 +138,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST /users
 router.post("/", checkToken, upload.any(), async (req, res) => {
   try {
     const { name, email, phone, position_id } = req.body;
@@ -141,7 +145,6 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
 
     const fails = {};
 
-    // Валідація
     if (!name || name.length < 2 || name.length > 60) {
       fails.name = ["The name must be between 2 and 60 characters."];
     }
@@ -170,7 +173,6 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
       });
     }
 
-    // Унікальність email/телефону
     const exists = await User.findOne({ $or: [{ email }, { phone }] });
     if (exists) {
       return res.status(409).json({
@@ -213,17 +215,6 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Server error", error: error.message });
-  }
-});
-
-// Перевірка
-router.get("/checkfields", async (req, res) => {
-  try {
-    const users = await User.find().limit(5);
-    res.json(users);
-  } catch (error) {
-    console.error("GET /checkfields error:", error);
-    res.status(500).json({ error: error.message });
   }
 });
 
