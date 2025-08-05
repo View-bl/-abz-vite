@@ -22,11 +22,10 @@ function SignupForm({ onUserRegistered }) {
   useEffect(() => {
     async function loadPositions() {
       try {
-        const res = await fetch("/api/positions");
+        const res = await fetch("https://abz-vite.onrender.com/api/positions");
         const data = await res.json();
         if (data.success) {
           setPositions(data.positions);
-          // Не вибираємо позицію за замовчуванням
         }
       } catch (error) {
         console.error("Failed to load positions:", error);
