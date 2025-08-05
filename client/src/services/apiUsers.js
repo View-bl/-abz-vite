@@ -5,8 +5,6 @@ export const getUsers = async (page = 1, count = 6) => {
   }
   return await res.json();
 };
-
-// apiUsers.js
 export const postUser = async (formData, token) => {
   const res = await fetch("/api/users", {
     method: "POST",

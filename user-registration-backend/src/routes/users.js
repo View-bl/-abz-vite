@@ -31,11 +31,36 @@ const upload = multer({
 // GET /users?count=5&page=1
 router.get("/", async (req, res) => {
   try {
-    const page = Math.max(1, parseInt(req.query.page)) || 1;
-    const count = Math.min(100, parseInt(req.query.count)) || 5;
+    const rawPage = req.query.page;
+    const rawCount = req.query.count;
+
+    // Перетворюємо на цілі числа
+    const page = parseInt(rawPage);
+    const count = parseInt(rawCount);
+
+    // Валідація
+    const fails = {};
+
+    if (!rawPage || isNaN(page) || page < 1 || !Number.isInteger(page)) {
+      fails.page = ["The page must be an integer and at least 1."];
+    }
+
+    if (!rawCount || isNaN(count) || count < 1 || !Number.isInteger(count)) {
+      fails.count = ["The count must be an integer and at least 1."];
+    }
+
+    if (Object.keys(fails).length > 0) {
+      return res.status(422).json({
+        success: false,
+        message: "Validation failed",
+        fails,
+      });
+    }
+
+    const finalCount = Math.min(100, count);
 
     const total_users = await User.countDocuments();
-    const total_pages = Math.ceil(total_users / count);
+    const total_pages = Math.ceil(total_users / finalCount);
 
     if (page > total_pages && total_pages !== 0) {
       return res.status(404).json({
@@ -45,9 +70,9 @@ router.get("/", async (req, res) => {
     }
 
     const users = await User.find()
-      .sort({ id: 1 }) // можна замінити на { registration_timestamp: 1 } для сортування на бекенді
-      .skip((page - 1) * count)
-      .limit(count)
+      .sort({ id: 1 })
+      .skip((page - 1) * finalCount)
+      .limit(finalCount)
       .select(
         "-_id id name email phone position_id photo registration_timestamp"
       );
@@ -63,10 +88,10 @@ router.get("/", async (req, res) => {
       links: {
         next_url:
           page < total_pages
-            ? `${baseUrl}?page=${page + 1}&count=${count}`
+            ? `${baseUrl}?page=${page + 1}&count=${finalCount}`
             : null,
         prev_url:
-          page > 1 ? `${baseUrl}?page=${page - 1}&count=${count}` : null,
+          page > 1 ? `${baseUrl}?page=${page - 1}&count=${finalCount}` : null,
       },
       users,
     });
