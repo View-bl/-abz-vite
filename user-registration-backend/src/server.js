@@ -9,11 +9,11 @@ export function startServer() {
 
   app.use(cors());
   app.use(express.json());
+  app.use("/uploads", express.static("uploads"));
 
   app.use("/api/users", usersRouter);
   app.use("/api/positions", positionsRouter);
   app.use("/api/token", tokenRouter);
-  app.use("/uploads", express.static("uploads"));
 
   app.get("/", (req, res) => {
     res.send("Hello from backend!");
