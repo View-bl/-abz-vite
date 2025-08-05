@@ -12,20 +12,9 @@ function UserCard({ avatar, name, details }) {
       />
       <h3 className={styles["user-name"]}>{name}</h3>
       <div className={styles["user-details"]}>
-        {lines.map((line, idx) => {
-          const trimmed = line.trim();
-          const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
-
-          return (
-            <p key={idx}>
-              {isEmail ? (
-                <span className={styles.email}>{trimmed}</span>
-              ) : (
-                trimmed
-              )}
-            </p>
-          );
-        })}
+        {lines.map((line, idx) => (
+          <p key={idx}>{line.trim()}</p>
+        ))}
       </div>
     </article>
   );
