@@ -9,16 +9,13 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshUsers, setRefreshUsers] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+useEffect(() => {
+  setIsLoading(false);
+}, []);
 
   // Функція для передачі в SignupForm
   const handleUserRegistered = () => {
-    setRefreshUsers((prev) => !prev); // перемикаємо сигнал оновлення
+    setRefreshUsers((prev) => !prev); 
   };
 
   if (isLoading) return <Preloader type="normal" />;

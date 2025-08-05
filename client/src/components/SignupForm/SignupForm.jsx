@@ -19,19 +19,14 @@ function SignupForm({ onUserRegistered }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Завантажуємо позиції з бекенду
   useEffect(() => {
     async function loadPositions() {
       try {
         const res = await fetch("/api/positions");
         const data = await res.json();
-        console.log("Positions loaded:", data.positions);
         if (data.success) {
           setPositions(data.positions);
-          if (data.positions.length > 0) {
-            setSelectedPosition(data.positions[0].id);
-            setForm((prev) => ({ ...prev, position_id: data.positions[0].id }));
-          }
+          // Не вибираємо позицію за замовчуванням
         }
       } catch (error) {
         console.error("Failed to load positions:", error);
@@ -40,23 +35,69 @@ function SignupForm({ onUserRegistered }) {
     loadPositions();
   }, []);
 
- const handleChange = (e) => {
-   const { name, value, files, type } = e.target;
-   if (type === "file") {
-     setForm((prev) => ({ ...prev, photo: files[0] }));
-     setErrors((prev) => ({ ...prev, photo: undefined })); // Очищаємо помилку фото
-   } else {
-     setForm((prev) => ({ ...prev, [name]: value }));
-     setErrors((prev) => ({ ...prev, [name]: undefined })); // Очищаємо помилку для цього поля
+  const handleChange = (e) => {
+    const { name, value, files, type } = e.target;
 
-     if (name === "position_id") {
-       setSelectedPosition(Number(value));
-       setForm((prev) => ({ ...prev, position_id: Number(value) }));
-       setErrors((prev) => ({ ...prev, position_id: undefined }));
-     }
-   }
- };
+    let updatedForm = { ...form };
+    let updatedErrors = { ...errors };
 
+    if (type === "file") {
+      const file = files[0];
+      updatedForm.photo = file;
+
+      if (!file || file.type !== "image/jpeg" || file.size > 5 * 1024 * 1024) {
+        updatedErrors.photo = "Photo must be a JPEG and ≤ 5MB";
+      } else {
+        delete updatedErrors.photo;
+      }
+    } else {
+      updatedForm[name] = value;
+
+      switch (name) {
+        case "name":
+          if (value.trim().length < 2) {
+            updatedErrors.name = "Name must be at least 2 characters";
+          } else {
+            delete updatedErrors.name;
+          }
+          break;
+
+        case "email":
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            updatedErrors.email = "Invalid email format";
+          } else {
+            delete updatedErrors.email;
+          }
+          break;
+
+        case "phone":
+          if (
+            !/^\+38\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/.test(value)
+          ) {
+            updatedErrors.phone = "Invalid phone format";
+          } else {
+            delete updatedErrors.phone;
+          }
+          break;
+
+        case "position_id":
+          updatedForm.position_id = Number(value);
+          setSelectedPosition(Number(value));
+          if (!value) {
+            updatedErrors.position = "Please select a position";
+          } else {
+            delete updatedErrors.position;
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    setForm(updatedForm);
+    setErrors(updatedErrors);
+  };
 
   const isFormValid = () => {
     return (
@@ -78,6 +119,11 @@ function SignupForm({ onUserRegistered }) {
     setLoading(true);
 
     const validationErrors = validateForm(form, selectedPosition);
+
+    if (!selectedPosition) {
+      validationErrors.position = "Please select a position";
+    }
+
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setLoading(false);
@@ -154,7 +200,6 @@ function SignupForm({ onUserRegistered }) {
           {errors.name && <p className={styles.error}>{errors.name}</p>}
         </div>
 
-        {/* Email */}
         <div className={styles["input-wrapper"]}>
           <input
             type="email"
@@ -174,7 +219,6 @@ function SignupForm({ onUserRegistered }) {
           {errors.email && <p className={styles.error}>{errors.email}</p>}
         </div>
 
-        {/* Phone */}
         <div
           className={`${styles["phone-wrapper"]} ${styles["input-wrapper"]}`}
         >
@@ -223,7 +267,6 @@ function SignupForm({ onUserRegistered }) {
           ))}
         </fieldset>
 
-        {/* File upload */}
         <div className={styles["input-wrapper"]}>
           <div
             className={`${styles["file-upload"]} ${
@@ -268,7 +311,6 @@ function SignupForm({ onUserRegistered }) {
           </div>
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           className={`${styles["signup-button"]} ${
@@ -282,7 +324,6 @@ function SignupForm({ onUserRegistered }) {
         </button>
       </form>
 
-      {/* Success / Error message */}
       {message && (
         <div className={styles.successMessageContainer}>
           {message === "User successfully registered!" ? (

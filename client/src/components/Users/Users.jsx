@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import UserCard from "../UserCard/UserCard";
+import Preloader from "../Preloader/Preloader"; 
 import styles from "./Users.module.css";
-import { formatPhone } from "../../utils/formatPhone"; 
+import { formatPhone } from "../../utils/formatPhone";
 
 const positionNames = {
   1: "Frontend Developer",
@@ -31,7 +32,7 @@ function Users({ refreshSignal }) {
           avatar: user.photo,
           details: `${positionNames[user.position_id] || "Unknown"}<br />${
             user.email
-          }<br />${formatPhone(user.phone)}`, // ✅ форматований номер
+          }<br />${formatPhone(user.phone)}`,
           registration_timestamp:
             new Date(user.registration_timestamp).getTime() || 0,
         }));
@@ -83,8 +84,11 @@ function Users({ refreshSignal }) {
           <UserCard key={user.id} {...user} />
         ))}
       </div>
-
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div className={styles["preloader-wrapper"]}>
+          <Preloader type="normal" />
+        </div>
+      )}
 
       {showMoreVisible && !loading && (
         <button

@@ -68,21 +68,22 @@ input:-webkit-autofill {
 }
 
 .input:focus + .floatingLabel,
-.input:not(:placeholder-shown) + .floatingLabel {
-  top: -3px;
+.input:not(:placeholder-shown) + .floatingLabel,
+.errorInput:focus + .floatingLabel,
+.errorInput:not(:placeholder-shown) + .floatingLabel {
+  top: 3px;            
   font-size: 12px;
   padding: 0 4px;
-}
-
-.errorInput {
-  border-color: #cb3d40 !important;
-  height: 54px;
 }
 
 .errorInput:focus + .floatingLabel,
 .errorInput:not(:placeholder-shown) + .floatingLabel {
   color: #cb3d40;
-  top: 2px;
+}
+
+.errorInput {
+  border-color: #cb3d40 !important;
+  height: 54px;
 }
 
 .error {
@@ -134,6 +135,8 @@ input:-webkit-autofill {
 }
 
 .signup-form fieldset {
+  flex-direction: column;
+  display: flex;
   border: none;
   padding: 0;
   margin: 0;
@@ -141,7 +144,6 @@ input:-webkit-autofill {
 }
 
 .signup-form label {
-  display: flex;
   height: 26px;
 }
 
@@ -149,19 +151,16 @@ input:-webkit-autofill {
   background-color: #f4e041;
 }
 
-/* Трохи яскравіший жовтий при ховері */
 .activeButton:hover {
   background-color: #ffe302;
 }
 
-/* Сіра кнопка коли форма невалідна */
 .inactiveButton {
   background-color: #b4b4b4;
   color: #fff;
   cursor: not-allowed;
 }
 
-/* Якщо хочеш, щоб при наведенні на неактивну кнопу нічого не змінювалось */
 .inactiveButton:hover {
   background-color: #b4b4b4;
   cursor: not-allowed;
@@ -258,7 +257,6 @@ input:-webkit-autofill {
   z-index: 2;
 }
 
-/* Кнопка сабміту */
 .signup-button {
   width: 100px;
   height: 34px;
@@ -302,6 +300,9 @@ input:-webkit-autofill {
   border-left: none;
   border-bottom: none;
 }
+
+
+
 /* Адаптив */
 @media (min-width: 768px) {
   .signup-form {
