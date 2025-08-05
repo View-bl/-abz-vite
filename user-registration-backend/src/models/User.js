@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   },
   phone: { type: String, required: true, match: /^\+380\d{9}$/ },
   position_id: { type: Number, required: true },
-  position: { type: String, required: true },
+  position: { type: String, required: false },
   registration_timestamp: {
     type: Number,
     default: () => Math.floor(Date.now() / 1000),

@@ -7,25 +7,32 @@ import Preloader from "./components/Preloader/Preloader";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshUsers, setRefreshUsers] = useState(false);
 
-  // затрима для завантаження
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); 
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
+  // Функція для передачі в SignupForm
+  const handleUserRegistered = () => {
+    setRefreshUsers((prev) => !prev); // перемикаємо сигнал оновлення
+  };
+
   if (isLoading) return <Preloader type="normal" />;
+
   return (
     <>
       <Header />
       <div className="container">
         <Hero />
-        <Users />
-        <SignupForm />
+        <Users refreshSignal={refreshUsers} />
+        <SignupForm onUserRegistered={handleUserRegistered} />
       </div>
     </>
   );
 }
+
 export default App;

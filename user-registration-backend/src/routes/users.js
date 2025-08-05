@@ -6,18 +6,16 @@ import { checkToken } from "../middleware/checkToken.js";
 
 const router = express.Router();
 
-// Налаштування multer для збереження фото в папку uploads
+// Налаштування multer
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
+  destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
     cb(null, `photo_${Date.now()}${ext}`);
   },
 });
 
-const upload = multer({ 
+const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
@@ -47,11 +45,11 @@ router.get("/", async (req, res) => {
     }
 
     const users = await User.find()
-      .sort({ id: 1 })
+      .sort({ id: 1 }) // можна замінити на { registration_timestamp: 1 } для сортування на бекенді
       .skip((page - 1) * count)
       .limit(count)
       .select(
-        "-_id id name email phone position_id photo_url registration_date"
+        "-_id id name email phone position_id photo registration_timestamp"
       );
 
     const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
@@ -90,9 +88,11 @@ router.get("/:id", async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ id }).select(
-      "-_id id name email phone position position_id photo"
-    );
+    const user = await User.findOne({ id })
+      .select(
+        "-_id id name email phone position_id photo registration_timestamp"
+      )
+      .lean();
 
     if (!user) {
       return res.status(404).json({
@@ -101,22 +101,18 @@ router.get("/:id", async (req, res) => {
       });
     }
 
-    res.json({
-      success: true,
-      user,
-    });
+    res.json({ success: true, user });
   } catch (error) {
     console.error("GET /users/:id error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-// POST /users - приймаємо multipart/form-data з фото з довільною назвою поля
-// Додаємо checkToken middleware для перевірки токена перед обробкою запиту
+// POST /users
 router.post("/", checkToken, upload.any(), async (req, res) => {
   try {
     const { name, email, phone, position_id } = req.body;
-    const photoFile = req.files && req.files.length > 0 ? req.files[0] : null;
+    const photoFile = req.files?.[0] || null;
 
     const fails = {};
 
@@ -149,11 +145,8 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
       });
     }
 
-    // Перевірка на існування користувача з таким email або телефоном
-    const exists = await User.findOne({
-      $or: [{ email }, { phone }],
-    });
-
+    // Унікальність email/телефону
+    const exists = await User.findOne({ $or: [{ email }, { phone }] });
     if (exists) {
       return res.status(409).json({
         success: false,
@@ -161,23 +154,19 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
       });
     }
 
-    // Автоматичний id
     const lastUser = await User.findOne().sort({ id: -1 });
-    const newId =
-      lastUser && typeof lastUser.id === "number" ? lastUser.id + 1 : 1;
+    const newId = lastUser?.id ? lastUser.id + 1 : 1;
 
-    // Створюємо юзера, фото - шлях до файлу
     const newUser = new User({
       id: newId,
       name,
       email,
       phone,
       position_id: parseInt(position_id),
-      position: "Unknown", 
-      registration_timestamp: Math.floor(Date.now() / 1000),
       photo: `${req.protocol}://${req.get("host")}/uploads/${
         photoFile.filename
       }`,
+      registration_timestamp: Math.floor(Date.now() / 1000),
     });
 
     await newUser.save();
@@ -202,6 +191,7 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
   }
 });
 
+// Перевірка
 router.get("/checkfields", async (req, res) => {
   try {
     const users = await User.find().limit(5);

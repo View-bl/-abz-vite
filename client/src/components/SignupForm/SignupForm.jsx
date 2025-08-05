@@ -1,4 +1,3 @@
-// SignupForm.jsx
 import styles from "./SignupForm.module.css";
 import { useEffect, useState } from "react";
 import { getToken } from "../../services/apiToken";
@@ -6,7 +5,7 @@ import { postUser } from "../../services/apiUsers";
 import { validateForm } from "../../utils/validation";
 import successIcon from "../../assets/images/User-successfully-registered.svg";
 
-function SignupForm() {
+function SignupForm({ onUserRegistered }) {
   const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [form, setForm] = useState({
@@ -20,25 +19,44 @@ function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
+  // Завантажуємо позиції з бекенду
   useEffect(() => {
-    const hardcodedPositions = [
-      { id: 1, name: "Frontend developer" },
-      { id: 2, name: "Backend developer" },
-      { id: 3, name: "Designer" },
-      { id: 4, name: "QA" },
-    ];
-    setPositions(hardcodedPositions);
+    async function loadPositions() {
+      try {
+        const res = await fetch("/api/positions");
+        const data = await res.json();
+        console.log("Positions loaded:", data.positions);
+        if (data.success) {
+          setPositions(data.positions);
+          if (data.positions.length > 0) {
+            setSelectedPosition(data.positions[0].id);
+            setForm((prev) => ({ ...prev, position_id: data.positions[0].id }));
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load positions:", error);
+      }
+    }
+    loadPositions();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value, files, type } = e.target;
-    if (type === "file") {
-      setForm((prev) => ({ ...prev, photo: files[0] }));
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
-      if (name === "position_id") setSelectedPosition(value);
-    }
-  };
+ const handleChange = (e) => {
+   const { name, value, files, type } = e.target;
+   if (type === "file") {
+     setForm((prev) => ({ ...prev, photo: files[0] }));
+     setErrors((prev) => ({ ...prev, photo: undefined })); // Очищаємо помилку фото
+   } else {
+     setForm((prev) => ({ ...prev, [name]: value }));
+     setErrors((prev) => ({ ...prev, [name]: undefined })); // Очищаємо помилку для цього поля
+
+     if (name === "position_id") {
+       setSelectedPosition(Number(value));
+       setForm((prev) => ({ ...prev, position_id: Number(value) }));
+       setErrors((prev) => ({ ...prev, position_id: undefined }));
+     }
+   }
+ };
+
 
   const isFormValid = () => {
     return (
@@ -91,13 +109,13 @@ function SignupForm() {
         });
         setSelectedPosition(null);
         document.getElementById("photo-upload").value = null;
+
+        if (onUserRegistered) onUserRegistered();
       } else {
         setMessage(result.message || "Registration failed.");
       }
     } catch (error) {
       console.error("Submit error:", error);
-
-      // Якщо в повідомленні є відомий текст, змінюємо його для користувача
       if (
         error.message.includes("User with this phone or email already exist") ||
         error.message.toLowerCase().includes("already exist")
