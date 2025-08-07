@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (allowedTypes.includes(file.mimetype)) {
@@ -219,6 +219,3 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
 });
 
 export default router;
-
-//
-

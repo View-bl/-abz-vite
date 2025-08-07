@@ -7,9 +7,7 @@ import tokenRouter from "./routes/tokenRouter.js";
 export function startServer() {
   const app = express();
 
-  // Додай тут, одразу після створення app:
-  app.use(cors({ origin: "https://abz-vite-s.onrender.com" }));
-
+  app.use(cors());
   app.use(express.json());
   app.use("/uploads", express.static("uploads"));
 
