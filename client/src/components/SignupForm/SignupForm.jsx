@@ -1,5 +1,5 @@
 import styles from "./SignupForm.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getToken } from "../../services/apiToken";
 import { postUser } from "../../services/apiUsers";
 import { validateForm } from "../../utils/validation";
@@ -19,6 +19,8 @@ function SignupForm({ onUserRegistered }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const successRef = useRef(null);
+
   useEffect(() => {
     async function loadPositions() {
       try {
@@ -33,6 +35,12 @@ function SignupForm({ onUserRegistered }) {
     }
     loadPositions();
   }, []);
+
+  useEffect(() => {
+    if (message === "User successfully registered!" && successRef.current) {
+      successRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [message]);
 
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
@@ -325,7 +333,10 @@ function SignupForm({ onUserRegistered }) {
       </form>
 
       {message && (
-        <div className={styles.successMessageContainer}>
+        <div
+          ref={message === "User successfully registered!" ? successRef : null}
+          className={styles.successMessageContainer}
+        >
           {message === "User successfully registered!" ? (
             <>
               <p className={styles.successMessage}>{message}</p>
