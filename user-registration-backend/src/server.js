@@ -5,7 +5,6 @@ import positionsRouter from "./routes/positions.js";
 import tokenRouter from "./routes/tokenRouter.js";
 import { config as dotenvConfig } from "dotenv";
 
-// Завантажує змінні середовища з .env
 dotenvConfig();
 
 export function startServer() {
