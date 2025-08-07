@@ -1,6 +1,5 @@
 import express from "express";
 import multer from "multer";
-import path from "path";
 import User from "../models/User.js";
 import { checkToken } from "../middleware/checkToken.js";
 import cloudinary from "../utils/cloudinary.js";
@@ -68,7 +67,7 @@ router.get("/", async (req, res) => {
         "-_id id name email phone position_id photo registration_timestamp"
       );
 
-    const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}`;
+    const baseUrl = `https://${req.get("host")}${req.baseUrl}`;
 
     res.json({
       success: true,
@@ -152,7 +151,8 @@ router.post("/", checkToken, upload.single("photo"), async (req, res) => {
       fails.phone = ["The phone must start with +380 and be 12 digits total."];
     }
 
-    if (!position_id || isNaN(parseInt(position_id))) {
+    const positionIdNum = Number(position_id);
+    if (!positionIdNum || isNaN(positionIdNum)) {
       fails.position_id = ["The position id must be an integer."];
     }
 
@@ -181,6 +181,10 @@ router.post("/", checkToken, upload.single("photo"), async (req, res) => {
 
     const streamUpload = (req) => {
       return new Promise((resolve, reject) => {
+        if (!req.file) {
+          reject(new Error("No file provided"));
+          return;
+        }
         const stream = cloudinary.uploader.upload_stream(
           { folder: "user-photos" },
           (error, result) => {
@@ -199,7 +203,7 @@ router.post("/", checkToken, upload.single("photo"), async (req, res) => {
       name,
       email,
       phone,
-      position_id: parseInt(position_id),
+      position_id: positionIdNum,
       photo: result.secure_url,
       registration_timestamp: Math.floor(Date.now() / 1000),
     });
