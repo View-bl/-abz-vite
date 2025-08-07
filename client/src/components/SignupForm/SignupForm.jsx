@@ -1,5 +1,5 @@
 import styles from "./SignupForm.module.css";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { getToken } from "../../services/apiToken";
 import { postUser } from "../../services/apiUsers";
 import { validateForm } from "../../utils/validation";
@@ -19,7 +19,28 @@ function SignupForm({ onUserRegistered }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const successRef = useRef(null);
+  // 👇 Cloudinary upload function
+  const uploadImageToCloudinary = async (file) => {
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "unsigned_preset");
+    data.append("folder", "users/avatars");
+
+    const res = await fetch(
+      "https://api.cloudinary.com/v1_1/dsq6u8rwc/image/upload",
+      {
+        method: "POST",
+        body: data,
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Помилка при завантаженні зображення на Cloudinary");
+    }
+
+    const json = await res.json();
+    return json.secure_url;
+  };
 
   useEffect(() => {
     async function loadPositions() {
@@ -35,15 +56,6 @@ function SignupForm({ onUserRegistered }) {
     }
     loadPositions();
   }, []);
-
-  useEffect(() => {
-    if (message === "User successfully registered!" && successRef.current) {
-      successRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [message]);
 
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
@@ -145,14 +157,18 @@ function SignupForm({ onUserRegistered }) {
     try {
       const { token } = await getToken();
 
-      const formData = new FormData();
-      formData.append("name", form.name);
-      formData.append("email", form.email);
-      formData.append("phone", form.phone);
-      formData.append("position_id", selectedPosition);
-      formData.append("photo", form.photo);
+      // Завантаження фото на Cloudinary
+      const cloudinaryUrl = await uploadImageToCloudinary(form.photo);
 
-      const result = await postUser(formData, token);
+      const userData = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        position_id: selectedPosition,
+        photo: cloudinaryUrl,
+      };
+
+      const result = await postUser(userData, token);
 
       if (result.success) {
         setMessage("User successfully registered!");
@@ -335,7 +351,7 @@ function SignupForm({ onUserRegistered }) {
       </form>
 
       {message && (
-        <div ref={successRef} className={styles.successMessageContainer}>
+        <div className={styles.successMessageContainer}>
           {message === "User successfully registered!" ? (
             <>
               <p className={styles.successMessage}>{message}</p>
