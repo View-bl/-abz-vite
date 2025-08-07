@@ -19,29 +19,6 @@ function SignupForm({ onUserRegistered }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // 👇 Cloudinary upload function
-  const uploadImageToCloudinary = async (file) => {
-    const data = new FormData();
-    data.append("file", file);
-    data.append("upload_preset", "unsigned_preset");
-    data.append("folder", "users/avatars");
-
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dsq6u8rwc/image/upload",
-      {
-        method: "POST",
-        body: data,
-      }
-    );
-
-    if (!res.ok) {
-      throw new Error("Помилка при завантаженні зображення на Cloudinary");
-    }
-
-    const json = await res.json();
-    return json.secure_url;
-  };
-
   useEffect(() => {
     async function loadPositions() {
       try {
@@ -157,18 +134,15 @@ function SignupForm({ onUserRegistered }) {
     try {
       const { token } = await getToken();
 
-      // Завантаження фото на Cloudinary
-      const cloudinaryUrl = await uploadImageToCloudinary(form.photo);
+      // Формуємо formData з усіма полями і файлом
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("email", form.email);
+      formData.append("phone", form.phone);
+      formData.append("position_id", selectedPosition);
+      formData.append("photo", form.photo);
 
-      const userData = {
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        position_id: selectedPosition,
-        photo: cloudinaryUrl,
-      };
-
-      const result = await postUser(userData, token);
+      const result = await postUser(formData, token);
 
       if (result.success) {
         setMessage("User successfully registered!");
