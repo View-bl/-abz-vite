@@ -3,20 +3,15 @@ import multer from "multer";
 import path from "path";
 import User from "../models/User.js";
 import { checkToken } from "../middleware/checkToken.js";
+import cloudinary from "../utils/cloudinary.js";
+import streamifier from "streamifier";
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `photo_${Date.now()}${ext}`);
-  },
-});
-
+const storage = multer.memoryStorage();
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, 
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (allowedTypes.includes(file.mimetype)) {
@@ -138,10 +133,10 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", checkToken, upload.any(), async (req, res) => {
+router.post("/", checkToken, upload.single("photo"), async (req, res) => {
   try {
     const { name, email, phone, position_id } = req.body;
-    const photoFile = req.files?.[0] || null;
+    const photoFile = req.file;
 
     const fails = {};
 
@@ -184,15 +179,28 @@ router.post("/", checkToken, upload.any(), async (req, res) => {
     const lastUser = await User.findOne().sort({ id: -1 });
     const newId = lastUser?.id ? lastUser.id + 1 : 1;
 
+    const streamUpload = (req) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "user-photos" },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
+    };
+
+    const result = await streamUpload(req);
+
     const newUser = new User({
       id: newId,
       name,
       email,
       phone,
       position_id: parseInt(position_id),
-      photo: `${req.protocol}://${req.get("host")}/uploads/${
-        photoFile.filename
-      }`,
+      photo: result.secure_url,
       registration_timestamp: Math.floor(Date.now() / 1000),
     });
 
