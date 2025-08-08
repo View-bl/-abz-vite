@@ -145,6 +145,7 @@ input:-webkit-autofill {
 
 .signup-form label {
   height: 26px;
+  display: flex;
 }
 
 .activeButton {
@@ -212,7 +213,7 @@ input:-webkit-autofill {
   padding: 14px 15px;
   transition: border-color 0.3s ease;
   height: 54px;
-  margin-left: -1px;
+  width: 83px;
 }
 
 .uploadButtonNoBorder {
@@ -225,6 +226,7 @@ input:-webkit-autofill {
 .upload-text {
   flex: 1;
   height: 54px;
+  padding-left: 16px;
   border-radius: 0 4px 4px 0;
   padding: 14px 15px;
   color: #7e7e7e;
@@ -245,6 +247,7 @@ input:-webkit-autofill {
 .upload-text-error {
   border: 2px solid #cb3d40 !important;
   border-left: none !important;
+  padding-top: 13px;
 }
 
 .file-upload input[type="file"] {
