@@ -310,6 +310,9 @@ input:-webkit-autofill {
     padding-left: 162px;
     padding-right: 162px;
   }
+  .phone-hint {
+    top: 55px;
+  }
 }
 
 @media (min-width: 1024px) {
