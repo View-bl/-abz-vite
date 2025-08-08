@@ -71,7 +71,7 @@ input:-webkit-autofill {
 .input:not(:placeholder-shown) + .floatingLabel,
 .errorInput:focus + .floatingLabel,
 .errorInput:not(:placeholder-shown) + .floatingLabel {
-  top: 3px;            
+  top: 3px;
   font-size: 12px;
   padding: 0 4px;
 }
@@ -235,7 +235,7 @@ input:-webkit-autofill {
   border-left-width: 0;
   border: 1px solid #d0cfcf;
   border-left: none;
-
+  padding-left: 16px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -303,8 +303,6 @@ input:-webkit-autofill {
   border-left: none;
   border-bottom: none;
 }
-
-
 
 /* Адаптив */
 @media (min-width: 768px) {
