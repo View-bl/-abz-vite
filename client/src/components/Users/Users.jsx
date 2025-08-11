@@ -4,13 +4,6 @@ import Preloader from "../Preloader/Preloader";
 import styles from "./Users.module.css";
 import { formatPhone } from "../../utils/formatPhone";
 
-const positionNames = {
-  1: "Frontend Developer",
-  2: "Backend Developer",
-  3: "Designer",
-  4: "QA",
-};
-
 const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
 function Users({ refreshSignal }) {
@@ -38,36 +31,23 @@ function Users({ refreshSignal }) {
           id: user.id,
           name: user.name,
           avatar: user.photo,
-          details: `${positionNames[user.position_id] || "Unknown"}<br />${
+          details: `${user.position || "Unknown"}<br />${
             user.email
           }<br />${formatPhone(user.phone)}`,
-          registration_timestamp:
-            new Date(user.registration_timestamp * 1000).getTime() || 0,
+          registration_timestamp: user.registration_timestamp * 1000,
         }));
 
         if (reset) {
-          fetchedUsers.sort(
-            (a, b) => b.registration_timestamp - a.registration_timestamp
-          );
           setApiUsers(fetchedUsers);
           setPage(1);
         } else {
-          setApiUsers((prev) => {
-            const combined = [...prev, ...fetchedUsers];
-            combined.sort(
-              (a, b) => b.registration_timestamp - a.registration_timestamp
-            );
-            return combined;
-          });
+          setApiUsers((prev) => [...prev, ...fetchedUsers]);
           setPage(pageToFetch);
         }
 
         setTotalPages(data.total_pages);
-      } else {
-        throw new Error("Failed to load users");
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
       setError(error.message);
     } finally {
       setLoading(false);
