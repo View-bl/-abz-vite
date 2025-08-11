@@ -23,6 +23,7 @@ function Users({ refreshSignal }) {
   const fetchUsers = async (reset = false) => {
     setLoading(true);
     setError(null);
+
     try {
       const pageToFetch = reset ? 1 : page + 1;
 
@@ -30,6 +31,7 @@ function Users({ refreshSignal }) {
         `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`,
         { cache: "no-store" }
       );
+
       if (!res.ok) throw new Error("Failed to fetch users");
 
       const data = await res.json();
@@ -47,19 +49,10 @@ function Users({ refreshSignal }) {
         }));
 
         if (reset) {
-          // Повне оновлення першої сторінки з сортуванням за датою (найновіші зверху)
-          const sorted = fetchedUsers.sort(
-            (a, b) => b.registration_timestamp - a.registration_timestamp
-          );
-          setApiUsers(sorted);
+          setApiUsers(fetchedUsers);
           setPage(1);
         } else {
-          // Додаємо нових користувачів у кінець без сортування
-          setApiUsers((prev) => {
-            const existingIds = new Set(prev.map((u) => u.id));
-            const newUsers = fetchedUsers.filter((u) => !existingIds.has(u.id));
-            return [...prev, ...newUsers];
-          });
+          setApiUsers((prev) => [...prev, ...fetchedUsers]);
           setPage(pageToFetch);
         }
 
@@ -73,12 +66,10 @@ function Users({ refreshSignal }) {
     }
   };
 
-  // Початкове завантаження першої сторінки з сортуванням
   useEffect(() => {
     fetchUsers(true);
   }, []);
 
-  // Оновлення після реєстрації — теж перша сторінка зі сортуванням
   useEffect(() => {
     fetchUsers(true);
   }, [refreshSignal]);
