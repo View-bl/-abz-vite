@@ -79,9 +79,8 @@ function Users({ refreshSignal }) {
   }, []);
 
   useEffect(() => {
-    if (refreshSignal) {
-      fetchUsers(true);
-    }
+    // Оновлюємо список при будь-якій зміні refreshSignal
+    fetchUsers(true);
   }, [refreshSignal]);
 
   const showMoreVisible = page < totalPages && apiUsers.length < 47;
