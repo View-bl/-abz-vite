@@ -47,14 +47,14 @@ function Users({ refreshSignal }) {
         }));
 
         if (reset) {
-          // Повне оновлення зі сортуванням за датою (найновіші зверху)
+          // Повне оновлення першої сторінки з сортуванням за датою (найновіші зверху)
           const sorted = fetchedUsers.sort(
             (a, b) => b.registration_timestamp - a.registration_timestamp
           );
           setApiUsers(sorted);
           setPage(1);
         } else {
-          // Додаємо нових користувачів у кінець списку без сортування
+          // Додаємо нових користувачів у кінець без сортування
           setApiUsers((prev) => {
             const existingIds = new Set(prev.map((u) => u.id));
             const newUsers = fetchedUsers.filter((u) => !existingIds.has(u.id));
@@ -73,10 +73,12 @@ function Users({ refreshSignal }) {
     }
   };
 
+  // Початкове завантаження першої сторінки з сортуванням
   useEffect(() => {
     fetchUsers(true);
   }, []);
 
+  // Оновлення після реєстрації — теж перша сторінка зі сортуванням
   useEffect(() => {
     fetchUsers(true);
   }, [refreshSignal]);
