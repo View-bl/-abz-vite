@@ -7,16 +7,14 @@ import Preloader from "./components/Preloader/Preloader";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [addUserFunc, setAddUserFunc] = useState(null);
+  const [refreshUsers, setRefreshUsers] = useState(false);
 
   useEffect(() => {
     setIsLoading(false);
   }, []);
 
-  const handleUserRegistered = (newUser) => {
-    if (addUserFunc) {
-      addUserFunc(newUser);
-    }
+  const handleUserRegistered = () => {
+    setRefreshUsers((prev) => !prev);
   };
 
   if (isLoading) return <Preloader type="normal" />;
@@ -26,7 +24,7 @@ function App() {
       <Header />
       <div className="container">
         <Hero />
-        <Users onUserRegistered={setAddUserFunc} />
+        <Users refreshSignal={refreshUsers} />
         <SignupForm onUserRegistered={handleUserRegistered} />
       </div>
     </>
