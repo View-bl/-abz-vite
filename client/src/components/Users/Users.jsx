@@ -13,19 +13,18 @@ const positionNames = {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
-function Users({ onUserRegistered }) {
+function Users({ refreshSignal }) {
   const [apiUsers, setApiUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchUsers = async (reset = false) => {
+  // Тепер pageToFetch передається явно в аргументах
+  const fetchUsers = async (pageToFetch = 1, reset = false) => {
     setLoading(true);
     setError(null);
     try {
-      const pageToFetch = reset ? 1 : page + 1;
-
       const res = await fetch(
         `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
       );
@@ -72,36 +71,15 @@ function Users({ onUserRegistered }) {
     }
   };
 
-  const addUser = (newUser) => {
-    const userToAdd = {
-      id: newUser.id,
-      name: newUser.name,
-      avatar: newUser.photo,
-      details: `${positionNames[newUser.position_id] || "Unknown"}<br />${
-        newUser.email
-      }<br />${formatPhone(newUser.phone)}`,
-      registration_timestamp:
-        new Date(newUser.registration_timestamp).getTime() || 0,
-    };
-
-    setApiUsers((prev) => {
-      const updated = [userToAdd, ...prev];
-      updated.sort(
-        (a, b) => b.registration_timestamp - a.registration_timestamp
-      );
-      return updated;
-    });
-  };
-
   useEffect(() => {
-    if (typeof onUserRegistered === "function") {
-      onUserRegistered(addUser);
-    }
-  }, [onUserRegistered]);
-
-  useEffect(() => {
-    fetchUsers(true);
+    fetchUsers(1, true);
   }, []);
+
+  useEffect(() => {
+    if (refreshSignal) {
+      fetchUsers(1, true);
+    }
+  }, [refreshSignal]);
 
   const showMoreVisible = page < totalPages && apiUsers.length < 47;
 
@@ -126,7 +104,7 @@ function Users({ onUserRegistered }) {
       {showMoreVisible && !loading && (
         <button
           className={styles["show-more-button"]}
-          onClick={() => fetchUsers(false)}
+          onClick={() => fetchUsers(page + 1, false)}
         >
           Show more
         </button>
