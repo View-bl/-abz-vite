@@ -15,25 +15,29 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
 function Users({ refreshSignal }) {
   const [apiUsers, setApiUsers] = useState([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchUsers = async (reset = false) => {
+  const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const pageToFetch = reset ? 1 : page + 1;
+      let allUsers = [];
+      let pageToFetch = 1;
+      let totalPages = 1;
 
-      const res = await fetch(
-        `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
-      );
-      if (!res.ok) throw new Error("Failed to fetch users");
+      while (pageToFetch <= totalPages) {
+        const res = await fetch(
+          `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
+        );
+        if (!res.ok) throw new Error("Failed to fetch users");
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (data.success) {
+        if (!data.success) throw new Error("Failed to load users");
+
+        totalPages = data.total_pages;
+
         const fetchedUsers = data.users.map((user) => ({
           id: user.id,
           name: user.name,
@@ -45,27 +49,14 @@ function Users({ refreshSignal }) {
             new Date(user.registration_timestamp * 1000).getTime() || 0,
         }));
 
-        if (reset) {
-          fetchedUsers.sort(
-            (a, b) => b.registration_timestamp - a.registration_timestamp
-          );
-          setApiUsers(fetchedUsers);
-          setPage(1);
-        } else {
-          setApiUsers((prev) => {
-            const combined = [...prev, ...fetchedUsers];
-            combined.sort(
-              (a, b) => b.registration_timestamp - a.registration_timestamp
-            );
-            return combined;
-          });
-          setPage(pageToFetch);
-        }
-
-        setTotalPages(data.total_pages);
-      } else {
-        throw new Error("Failed to load users");
+        allUsers = allUsers.concat(fetchedUsers);
+        pageToFetch++;
       }
+
+      allUsers.sort(
+        (a, b) => b.registration_timestamp - a.registration_timestamp
+      );
+      setApiUsers(allUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
       setError(error.message);
@@ -75,14 +66,14 @@ function Users({ refreshSignal }) {
   };
 
   useEffect(() => {
-    fetchUsers(true);
+    fetchUsers();
   }, []);
 
   useEffect(() => {
-    fetchUsers(true);
+    if (refreshSignal) {
+      fetchUsers();
+    }
   }, [refreshSignal]);
-
-  const showMoreVisible = page < totalPages && apiUsers.length < 47;
 
   return (
     <section id="users" className={styles["users-section"]}>
@@ -101,18 +92,8 @@ function Users({ refreshSignal }) {
           <Preloader type="normal" />
         </div>
       )}
-
-      {showMoreVisible && !loading && (
-        <button
-          className={styles["show-more-button"]}
-          onClick={() => fetchUsers(false)}
-        >
-          Show more
-        </button>
-      )}
     </section>
   );
 }
 
 export default Users;
-//
