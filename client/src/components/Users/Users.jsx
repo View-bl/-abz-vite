@@ -52,7 +52,13 @@ function Users({ refreshSignal }) {
           setApiUsers(fetchedUsers);
           setPage(1);
         } else {
-          setApiUsers((prev) => [...prev, ...fetchedUsers]);
+          setApiUsers((prev) => {
+            const combined = [...prev, ...fetchedUsers];
+            combined.sort(
+              (a, b) => b.registration_timestamp - a.registration_timestamp
+            );
+            return combined;
+          });
           setPage(pageToFetch);
         }
 
