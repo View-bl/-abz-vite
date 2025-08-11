@@ -164,6 +164,7 @@ function SignupForm({ onUserRegistered }) {
         setSelectedPosition(null);
         document.getElementById("photo-upload").value = null;
 
+        // Оновлюємо список користувачів у App
         if (onUserRegistered) onUserRegistered();
       } else {
         setMessage(result.message || "Registration failed.");
