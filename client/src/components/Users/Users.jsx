@@ -52,13 +52,7 @@ function Users({ refreshSignal }) {
           setApiUsers(fetchedUsers);
           setPage(1);
         } else {
-          setApiUsers((prev) => {
-            const combined = [...prev, ...fetchedUsers];
-            combined.sort(
-              (a, b) => b.registration_timestamp - a.registration_timestamp
-            );
-            return combined;
-          });
+          setApiUsers((prev) => [...prev, ...fetchedUsers]);
           setPage(pageToFetch);
         }
 
@@ -79,7 +73,9 @@ function Users({ refreshSignal }) {
   }, []);
 
   useEffect(() => {
-    fetchUsers(true);
+    if (refreshSignal) {
+      fetchUsers(true);
+    }
   }, [refreshSignal]);
 
   const showMoreVisible = page < totalPages && apiUsers.length < 47;
@@ -115,4 +111,3 @@ function Users({ refreshSignal }) {
 }
 
 export default Users;
-//
