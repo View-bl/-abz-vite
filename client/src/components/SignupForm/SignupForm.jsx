@@ -142,7 +142,6 @@ function SignupForm({ onUserRegistered }) {
     try {
       const { token } = await getToken();
 
-      // Формуємо formData з усіма полями і файлом
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("email", form.email);
@@ -152,7 +151,16 @@ function SignupForm({ onUserRegistered }) {
 
       const result = await postUser(formData, token);
 
-      if (result.success) {
+      if (result.success && result.user_id) {
+        const userRes = await fetch(
+          `https://abz-vite.onrender.com/api/users/${result.user_id}`
+        );
+        const userData = await userRes.json();
+
+        if (userData.success && onUserRegistered) {
+          onUserRegistered(userData.user);
+        }
+
         setMessage("User successfully registered!");
         setForm({
           name: "",
@@ -163,8 +171,6 @@ function SignupForm({ onUserRegistered }) {
         });
         setSelectedPosition(null);
         document.getElementById("photo-upload").value = null;
-
-        if (onUserRegistered) onUserRegistered();
       } else {
         setMessage(result.message || "Registration failed.");
       }

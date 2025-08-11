@@ -13,7 +13,7 @@ const positionNames = {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
-function Users({ refreshSignal }) {
+function Users({ refreshSignal, newUser }) {
   const [apiUsers, setApiUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -82,6 +82,29 @@ function Users({ refreshSignal }) {
       fetchUsers(true);
     }
   }, [refreshSignal]);
+
+  useEffect(() => {
+    if (newUser) {
+      const formattedUser = {
+        id: newUser.id,
+        name: newUser.name,
+        avatar: newUser.photo,
+        details: `${positionNames[newUser.position_id] || "Unknown"}<br />${
+          newUser.email
+        }<br />${formatPhone(newUser.phone)}`,
+        registration_timestamp:
+          new Date(newUser.registration_timestamp).getTime() || Date.now(),
+      };
+
+      setApiUsers((prev) => {
+        const updated = [formattedUser, ...prev];
+        updated.sort(
+          (a, b) => b.registration_timestamp - a.registration_timestamp
+        );
+        return updated;
+      });
+    }
+  }, [newUser]);
 
   const showMoreVisible = page < totalPages && apiUsers.length < 47;
 
