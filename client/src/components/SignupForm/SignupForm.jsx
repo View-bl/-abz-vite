@@ -5,13 +5,6 @@ import { postUser } from "../../services/apiUsers";
 import { validateForm } from "../../utils/validation";
 import successIcon from "../../assets/images/User-successfully-registered.svg";
 
-const positionNames = {
-  1: "Frontend Developer",
-  2: "Backend Developer",
-  3: "Designer",
-  4: "QA",
-};
-
 function SignupForm({ onUserRegistered }) {
   const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
@@ -25,6 +18,7 @@ function SignupForm({ onUserRegistered }) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
   const successRef = useRef(null);
 
   useEffect(() => {
@@ -50,6 +44,7 @@ function SignupForm({ onUserRegistered }) {
 
   const handleChange = (e) => {
     const { name, value, files, type } = e.target;
+
     let updatedForm = { ...form };
     let updatedErrors = { ...errors };
 
@@ -147,6 +142,7 @@ function SignupForm({ onUserRegistered }) {
     try {
       const { token } = await getToken();
 
+      // Формуємо formData з усіма полями і файлом
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("email", form.email);
@@ -158,18 +154,6 @@ function SignupForm({ onUserRegistered }) {
 
       if (result.success) {
         setMessage("User successfully registered!");
-        // Створюємо об’єкт нового користувача для списку
-        const newUser = {
-          id: result.user_id,
-          name: form.name,
-          avatar: URL.createObjectURL(form.photo), // тимчасово локальне посилання
-          details: `${positionNames[selectedPosition] || "Unknown"}<br />${
-            form.email
-          }<br />${form.phone}`,
-          registration_timestamp: Date.now(),
-          phone: form.phone,
-        };
-
         setForm({
           name: "",
           email: "",
@@ -180,7 +164,8 @@ function SignupForm({ onUserRegistered }) {
         setSelectedPosition(null);
         document.getElementById("photo-upload").value = null;
 
-        if (onUserRegistered) onUserRegistered(newUser);
+        // Оновлюємо список користувачів у App
+        if (onUserRegistered) onUserRegistered();
       } else {
         setMessage(result.message || "Registration failed.");
       }
@@ -224,7 +209,6 @@ function SignupForm({ onUserRegistered }) {
           {errors.name && <p className={styles.error}>{errors.name}</p>}
         </div>
 
-        {/* Email */}
         <div className={styles["input-wrapper"]}>
           <input
             type="email"
@@ -244,7 +228,6 @@ function SignupForm({ onUserRegistered }) {
           {errors.email && <p className={styles.error}>{errors.email}</p>}
         </div>
 
-        {/* Phone */}
         <div
           className={`${styles["phone-wrapper"]} ${styles["input-wrapper"]}`}
         >
@@ -271,7 +254,7 @@ function SignupForm({ onUserRegistered }) {
           {errors.phone && <p className={styles.error}>{errors.phone}</p>}
         </div>
 
-        {/* Positions (radio buttons) */}
+        {/* Radio buttons */}
         <fieldset className={styles["radio-group"]}>
           <legend
             className={styles.legend}
@@ -293,7 +276,6 @@ function SignupForm({ onUserRegistered }) {
           ))}
         </fieldset>
 
-        {/* Photo Upload */}
         <div className={styles["input-wrapper"]}>
           <div
             className={`${styles["file-upload"]} ${
@@ -338,7 +320,6 @@ function SignupForm({ onUserRegistered }) {
           </div>
         </div>
 
-        {/* Submit Button */}
         <button
           type="submit"
           className={`${styles["signup-button"]} ${
@@ -352,7 +333,6 @@ function SignupForm({ onUserRegistered }) {
         </button>
       </form>
 
-      {/* Message area */}
       {message && (
         <div
           ref={message === "User successfully registered!" ? successRef : null}
