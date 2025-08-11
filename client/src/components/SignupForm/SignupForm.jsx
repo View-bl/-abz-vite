@@ -58,49 +58,47 @@ function SignupForm({ onUserRegistered }) {
         delete updatedErrors.photo;
       }
     } else {
-      if (name === "position_id") {
-        updatedForm.position_id = Number(value);
-        setSelectedPosition(Number(value));
-        if (!value) {
-          updatedErrors.position = "Please select a position";
-        } else {
-          delete updatedErrors.position;
-        }
-      } else {
-        updatedForm[name] = value;
+      updatedForm[name] = value;
 
-        switch (name) {
-          case "name":
-            if (value.trim().length < 2) {
-              updatedErrors.name = "Name must be at least 2 characters";
-            } else {
-              delete updatedErrors.name;
-            }
-            break;
+      switch (name) {
+        case "name":
+          if (value.trim().length < 2) {
+            updatedErrors.name = "Name must be at least 2 characters";
+          } else {
+            delete updatedErrors.name;
+          }
+          break;
 
-          case "email":
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-              updatedErrors.email = "Invalid email format";
-            } else {
-              delete updatedErrors.email;
-            }
-            break;
+        case "email":
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+            updatedErrors.email = "Invalid email format";
+          } else {
+            delete updatedErrors.email;
+          }
+          break;
 
-          case "phone":
-            if (
-              !/^\+38\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/.test(
-                value
-              )
-            ) {
-              updatedErrors.phone = "Invalid phone format";
-            } else {
-              delete updatedErrors.phone;
-            }
-            break;
+        case "phone":
+          if (
+            !/^\+38\s?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}$/.test(value)
+          ) {
+            updatedErrors.phone = "Invalid phone format";
+          } else {
+            delete updatedErrors.phone;
+          }
+          break;
 
-          default:
-            break;
-        }
+        case "position_id":
+          updatedForm.position_id = Number(value);
+          setSelectedPosition(Number(value));
+          if (!value) {
+            updatedErrors.position = "Please select a position";
+          } else {
+            delete updatedErrors.position;
+          }
+          break;
+
+        default:
+          break;
       }
     }
 
@@ -144,6 +142,7 @@ function SignupForm({ onUserRegistered }) {
     try {
       const { token } = await getToken();
 
+      // Формуємо formData з усіма полями і файлом
       const formData = new FormData();
       formData.append("name", form.name);
       formData.append("email", form.email);
@@ -209,7 +208,6 @@ function SignupForm({ onUserRegistered }) {
           {errors.name && <p className={styles.error}>{errors.name}</p>}
         </div>
 
-        {/* Email */}
         <div className={styles["input-wrapper"]}>
           <input
             type="email"
@@ -229,7 +227,6 @@ function SignupForm({ onUserRegistered }) {
           {errors.email && <p className={styles.error}>{errors.email}</p>}
         </div>
 
-        {/* Phone */}
         <div
           className={`${styles["phone-wrapper"]} ${styles["input-wrapper"]}`}
         >
@@ -256,7 +253,7 @@ function SignupForm({ onUserRegistered }) {
           {errors.phone && <p className={styles.error}>{errors.phone}</p>}
         </div>
 
-        {/* Radio buttons for positions */}
+        {/* Radio buttons */}
         <fieldset className={styles["radio-group"]}>
           <legend
             className={styles.legend}
@@ -278,7 +275,6 @@ function SignupForm({ onUserRegistered }) {
           ))}
         </fieldset>
 
-        {/* Photo upload */}
         <div className={styles["input-wrapper"]}>
           <div
             className={`${styles["file-upload"]} ${
@@ -323,7 +319,6 @@ function SignupForm({ onUserRegistered }) {
           </div>
         </div>
 
-        {/* Submit button */}
         <button
           type="submit"
           className={`${styles["signup-button"]} ${
@@ -337,7 +332,6 @@ function SignupForm({ onUserRegistered }) {
         </button>
       </form>
 
-      {/* Message after submission */}
       {message && (
         <div
           ref={message === "User successfully registered!" ? successRef : null}
