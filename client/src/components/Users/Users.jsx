@@ -15,42 +15,56 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
 function Users({ refreshSignal }) {
   const [apiUsers, setApiUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [totalUsers, setTotalUsers] = useState(0);
-  const usersPerPage = 6;
 
-  const fetchUsers = async (pageToFetch = 1) => {
+  const fetchUsers = async (reset = false) => {
     setLoading(true);
     setError(null);
     try {
+      const pageToFetch = reset ? 1 : page + 1;
+
       const res = await fetch(
-        `${API_BASE_URL}/api/users?page=${pageToFetch}&count=${usersPerPage}`
+        `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
       );
       if (!res.ok) throw new Error("Failed to fetch users");
 
       const data = await res.json();
 
-      if (!data.success) throw new Error("Failed to load users");
+      if (data.success) {
+        const fetchedUsers = data.users.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatar: user.photo,
+          details: `${positionNames[user.position_id] || "Unknown"}<br />${
+            user.email
+          }<br />${formatPhone(user.phone)}`,
+          registration_timestamp:
+            new Date(user.registration_timestamp * 1000).getTime() || 0,
+        }));
 
-      setTotalUsers(data.total_users || 0);
+        if (reset) {
+          fetchedUsers.sort(
+            (a, b) => b.registration_timestamp - a.registration_timestamp
+          );
+          setApiUsers(fetchedUsers);
+          setPage(1);
+        } else {
+          setApiUsers((prev) => {
+            const combined = [...prev, ...fetchedUsers];
+            combined.sort(
+              (a, b) => b.registration_timestamp - a.registration_timestamp
+            );
+            return combined;
+          });
+          setPage(pageToFetch);
+        }
 
-      const fetchedUsers = data.users.map((user) => ({
-        id: user.id,
-        name: user.name,
-        avatar: user.photo,
-        details: `${positionNames[user.position_id] || "Unknown"}<br />${
-          user.email
-        }<br />${formatPhone(user.phone)}`,
-        registration_timestamp:
-          new Date(user.registration_timestamp * 1000).getTime() || 0,
-      }));
-
-      if (pageToFetch === 1) {
-        setApiUsers(fetchedUsers);
+        setTotalPages(data.total_pages);
       } else {
-        setApiUsers((prev) => [...prev, ...fetchedUsers]);
+        throw new Error("Failed to load users");
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -60,26 +74,15 @@ function Users({ refreshSignal }) {
     }
   };
 
-  // Завантаження першої сторінки або при оновленні
   useEffect(() => {
-    setPage(1);
-    fetchUsers(1);
+    fetchUsers(true);
+  }, []);
+
+  useEffect(() => {
+    fetchUsers(true);
   }, [refreshSignal]);
 
-  // Обробка натискання кнопки "Load more"
-  const handleLoadMore = () => {
-    if (!loading) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchUsers(nextPage);
-    }
-  };
-
-  // Кількість завантажених користувачів
-  const loadedUsersCount = apiUsers.length;
-
-  // Чи показувати кнопку
-  const canLoadMore = loadedUsersCount < totalUsers && loadedUsersCount < 47;
+  const showMoreVisible = page < totalPages && apiUsers.length < 47;
 
   return (
     <section id="users" className={styles["users-section"]}>
@@ -99,9 +102,12 @@ function Users({ refreshSignal }) {
         </div>
       )}
 
-      {canLoadMore && !loading && (
-        <button className={styles.loadMoreButton} onClick={handleLoadMore}>
-          Load more
+      {showMoreVisible && !loading && (
+        <button
+          className={styles["show-more-button"]}
+          onClick={() => fetchUsers(false)}
+        >
+          Show more
         </button>
       )}
     </section>
@@ -109,3 +115,4 @@ function Users({ refreshSignal }) {
 }
 
 export default Users;
+//
