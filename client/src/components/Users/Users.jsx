@@ -83,9 +83,11 @@ function Users({ refreshSignal }) {
       {error && <p className={styles.error}>Error: {error}</p>}
 
       <div className={styles["user-cards"]}>
-        {apiUsers.map((user) => (
-          <UserCard key={user.id} {...user} />
-        ))}
+        {[...apiUsers]
+          .sort((a, b) => b.registration_timestamp - a.registration_timestamp)
+          .map((user) => (
+            <UserCard key={user.id} {...user} />
+          ))}
       </div>
 
       {loading && (
