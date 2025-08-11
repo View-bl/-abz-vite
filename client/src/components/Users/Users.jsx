@@ -13,7 +13,7 @@ const positionNames = {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
-function Users({ refreshSignal, newUser }) {
+function Users({ refreshSignal, onUserAdded }) {
   const [apiUsers, setApiUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -23,7 +23,6 @@ function Users({ refreshSignal, newUser }) {
   const fetchUsers = async (reset = false) => {
     setLoading(true);
     setError(null);
-
     try {
       const pageToFetch = reset ? 1 : page + 1;
 
@@ -47,10 +46,10 @@ function Users({ refreshSignal, newUser }) {
         }));
 
         if (reset) {
-          const sorted = [...fetchedUsers].sort(
+          fetchedUsers.sort(
             (a, b) => b.registration_timestamp - a.registration_timestamp
           );
-          setApiUsers(sorted);
+          setApiUsers(fetchedUsers);
           setPage(1);
         } else {
           setApiUsers((prev) => {
@@ -73,6 +72,28 @@ function Users({ refreshSignal, newUser }) {
     }
   };
 
+  // Функція для додавання нового користувача одразу у стан
+  const addUser = (newUser) => {
+    const userToAdd = {
+      id: newUser.id,
+      name: newUser.name,
+      avatar: newUser.photo,
+      details: `${positionNames[newUser.position_id] || "Unknown"}<br />${
+        newUser.email
+      }<br />${formatPhone(newUser.phone)}`,
+      registration_timestamp:
+        new Date(newUser.registration_timestamp).getTime() || 0,
+    };
+
+    setApiUsers((prev) => {
+      const updated = [userToAdd, ...prev];
+      updated.sort(
+        (a, b) => b.registration_timestamp - a.registration_timestamp
+      );
+      return updated;
+    });
+  };
+
   useEffect(() => {
     fetchUsers(true);
   }, []);
@@ -83,30 +104,14 @@ function Users({ refreshSignal, newUser }) {
     }
   }, [refreshSignal]);
 
-  useEffect(() => {
-    if (newUser) {
-      const formattedUser = {
-        id: newUser.id,
-        name: newUser.name,
-        avatar: newUser.photo,
-        details: `${positionNames[newUser.position_id] || "Unknown"}<br />${
-          newUser.email
-        }<br />${formatPhone(newUser.phone)}`,
-        registration_timestamp:
-          new Date(newUser.registration_timestamp).getTime() || Date.now(),
-      };
-
-      setApiUsers((prev) => {
-        const updated = [formattedUser, ...prev];
-        updated.sort(
-          (a, b) => b.registration_timestamp - a.registration_timestamp
-        );
-        return updated;
-      });
-    }
-  }, [newUser]);
-
   const showMoreVisible = page < totalPages && apiUsers.length < 47;
+
+  // Якщо хочеш, можна передати addUser через пропс (onUserAdded) або іншим способом
+  useEffect(() => {
+    if (typeof onUserAdded === "function") {
+      onUserAdded(addUser);
+    }
+  }, [onUserAdded]);
 
   return (
     <section id="users" className={styles["users-section"]}>
