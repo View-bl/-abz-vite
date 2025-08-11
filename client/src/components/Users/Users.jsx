@@ -65,12 +65,10 @@ function Users({ refreshSignal }) {
     }
   };
 
-  // Початкове завантаження користувачів
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // Оновлення користувачів при зміні refreshSignal
   useEffect(() => {
     fetchUsers();
   }, [refreshSignal]);
