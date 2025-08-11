@@ -79,7 +79,6 @@ function Users({ refreshSignal }) {
   }, []);
 
   useEffect(() => {
-    // Оновлюємо список при будь-якій зміні refreshSignal
     fetchUsers(true);
   }, [refreshSignal]);
 
@@ -116,3 +115,4 @@ function Users({ refreshSignal }) {
 }
 
 export default Users;
+//
