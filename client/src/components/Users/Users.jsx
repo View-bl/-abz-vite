@@ -13,7 +13,7 @@ const positionNames = {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
-function Users({ refreshSignal, onUserAdded }) {
+function Users({ onUserRegistered }) {
   const [apiUsers, setApiUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -72,7 +72,6 @@ function Users({ refreshSignal, onUserAdded }) {
     }
   };
 
-  // Функція для додавання нового користувача одразу у стан
   const addUser = (newUser) => {
     const userToAdd = {
       id: newUser.id,
@@ -95,23 +94,16 @@ function Users({ refreshSignal, onUserAdded }) {
   };
 
   useEffect(() => {
+    if (typeof onUserRegistered === "function") {
+      onUserRegistered(addUser);
+    }
+  }, [onUserRegistered]);
+
+  useEffect(() => {
     fetchUsers(true);
   }, []);
 
-  useEffect(() => {
-    if (refreshSignal) {
-      fetchUsers(true);
-    }
-  }, [refreshSignal]);
-
   const showMoreVisible = page < totalPages && apiUsers.length < 47;
-
-  // Якщо хочеш, можна передати addUser через пропс (onUserAdded) або іншим способом
-  useEffect(() => {
-    if (typeof onUserAdded === "function") {
-      onUserAdded(addUser);
-    }
-  }, [onUserAdded]);
 
   return (
     <section id="users" className={styles["users-section"]}>

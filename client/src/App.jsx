@@ -7,15 +7,16 @@ import Preloader from "./components/Preloader/Preloader";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [refreshUsers, setRefreshUsers] = useState(false);
+  const [addUserFunc, setAddUserFunc] = useState(null);
 
-useEffect(() => {
-  setIsLoading(false);
-}, []);
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
-  // Функція для передачі в SignupForm
-  const handleUserRegistered = () => {
-    setRefreshUsers((prev) => !prev); 
+  const handleUserRegistered = (newUser) => {
+    if (addUserFunc) {
+      addUserFunc(newUser);
+    }
   };
 
   if (isLoading) return <Preloader type="normal" />;
@@ -25,7 +26,7 @@ useEffect(() => {
       <Header />
       <div className="container">
         <Hero />
-        <Users refreshSignal={refreshUsers} />
+        <Users onUserRegistered={setAddUserFunc} />
         <SignupForm onUserRegistered={handleUserRegistered} />
       </div>
     </>
