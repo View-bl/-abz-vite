@@ -27,7 +27,8 @@ function Users({ refreshSignal }) {
       const pageToFetch = reset ? 1 : page + 1;
 
       const res = await fetch(
-        `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
+        `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`,
+        { cache: "no-store" }
       );
       if (!res.ok) throw new Error("Failed to fetch users");
 
@@ -46,20 +47,18 @@ function Users({ refreshSignal }) {
         }));
 
         if (reset) {
+          // Повне оновлення зі сортуванням за датою (найновіші зверху)
           const sorted = fetchedUsers.sort(
             (a, b) => b.registration_timestamp - a.registration_timestamp
           );
           setApiUsers(sorted);
           setPage(1);
         } else {
+          // Додаємо нових користувачів у кінець списку без сортування
           setApiUsers((prev) => {
             const existingIds = new Set(prev.map((u) => u.id));
             const newUsers = fetchedUsers.filter((u) => !existingIds.has(u.id));
-            const combined = [...prev, ...newUsers];
-            combined.sort(
-              (a, b) => b.registration_timestamp - a.registration_timestamp
-            );
-            return combined;
+            return [...prev, ...newUsers];
           });
           setPage(pageToFetch);
         }
