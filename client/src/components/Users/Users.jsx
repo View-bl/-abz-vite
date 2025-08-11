@@ -20,11 +20,12 @@ function Users({ refreshSignal }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Тепер pageToFetch передається явно в аргументах
-  const fetchUsers = async (pageToFetch = 1, reset = false) => {
+  const fetchUsers = async (reset = false) => {
     setLoading(true);
     setError(null);
     try {
+      const pageToFetch = reset ? 1 : page + 1;
+
       const res = await fetch(
         `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
       );
@@ -72,13 +73,11 @@ function Users({ refreshSignal }) {
   };
 
   useEffect(() => {
-    fetchUsers(1, true);
+    fetchUsers(true);
   }, []);
 
   useEffect(() => {
-    if (refreshSignal) {
-      fetchUsers(1, true);
-    }
+    fetchUsers(true);
   }, [refreshSignal]);
 
   const showMoreVisible = page < totalPages && apiUsers.length < 47;
@@ -104,7 +103,7 @@ function Users({ refreshSignal }) {
       {showMoreVisible && !loading && (
         <button
           className={styles["show-more-button"]}
-          onClick={() => fetchUsers(page + 1, false)}
+          onClick={() => fetchUsers(false)}
         >
           Show more
         </button>
