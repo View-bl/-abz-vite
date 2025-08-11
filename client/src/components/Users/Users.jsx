@@ -46,14 +46,16 @@ function Users({ refreshSignal }) {
         }));
 
         if (reset) {
-          fetchedUsers.sort(
+          const sorted = fetchedUsers.sort(
             (a, b) => b.registration_timestamp - a.registration_timestamp
           );
-          setApiUsers(fetchedUsers);
+          setApiUsers(sorted);
           setPage(1);
         } else {
           setApiUsers((prev) => {
-            const combined = [...prev, ...fetchedUsers];
+            const existingIds = new Set(prev.map((u) => u.id));
+            const newUsers = fetchedUsers.filter((u) => !existingIds.has(u.id));
+            const combined = [...prev, ...newUsers];
             combined.sort(
               (a, b) => b.registration_timestamp - a.registration_timestamp
             );
@@ -80,7 +82,7 @@ function Users({ refreshSignal }) {
     fetchUsers(true);
   }, [refreshSignal]);
 
-  const showMoreVisible = page < totalPages && apiUsers.length < 47;
+  const showMoreVisible = page < totalPages && apiUsers.length < totalPages * 6;
 
   return (
     <section id="users" className={styles["users-section"]}>
