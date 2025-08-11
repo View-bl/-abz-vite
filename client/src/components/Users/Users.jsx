@@ -17,40 +17,46 @@ function Users({ refreshSignal }) {
   const [apiUsers, setApiUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchUsers = async (pageToFetch = 1) => {
+  const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(
-        `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
-      );
-      if (!res.ok) throw new Error("Failed to fetch users");
+      let allUsers = [];
+      let pageToFetch = 1;
+      let totalPages = 1;
 
-      const data = await res.json();
+      while (pageToFetch <= totalPages) {
+        const res = await fetch(
+          `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
+        );
+        if (!res.ok) throw new Error("Failed to fetch users");
 
-      if (!data.success) throw new Error("Failed to load users");
+        const data = await res.json();
 
-      setTotalPages(data.total_pages);
+        if (!data.success) throw new Error("Failed to load users");
 
-      const fetchedUsers = data.users.map((user) => ({
-        id: user.id,
-        name: user.name,
-        avatar: user.photo,
-        details: `${positionNames[user.position_id] || "Unknown"}<br />${
-          user.email
-        }<br />${formatPhone(user.phone)}`,
-        registration_timestamp:
-          new Date(user.registration_timestamp * 1000).getTime() || 0,
-      }));
+        totalPages = data.total_pages;
 
-      if (pageToFetch === 1) {
-        setApiUsers(fetchedUsers);
-      } else {
-        setApiUsers((prev) => [...prev, ...fetchedUsers]);
+        const fetchedUsers = data.users.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatar: user.photo,
+          details: `${positionNames[user.position_id] || "Unknown"}<br />${
+            user.email
+          }<br />${formatPhone(user.phone)}`,
+          registration_timestamp:
+            new Date(user.registration_timestamp * 1000).getTime() || 0,
+        }));
+
+        allUsers = allUsers.concat(fetchedUsers);
+        pageToFetch++;
       }
+
+      allUsers.sort(
+        (a, b) => b.registration_timestamp - a.registration_timestamp
+      );
+      setApiUsers(allUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
       setError(error.message);
@@ -59,22 +65,15 @@ function Users({ refreshSignal }) {
     }
   };
 
+  // Початкове завантаження користувачів
   useEffect(() => {
-    setPage(1);
-    fetchUsers(1);
-  }, [refreshSignal]);
-
-  useEffect(() => {
-    fetchUsers(page);
+    fetchUsers();
   }, []);
 
-  const handleLoadMore = () => {
-    if (page < totalPages && !loading) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchUsers(nextPage);
-    }
-  };
+  // Оновлення користувачів при зміні refreshSignal
+  useEffect(() => {
+    fetchUsers();
+  }, [refreshSignal]);
 
   return (
     <section id="users" className={styles["users-section"]}>
@@ -92,12 +91,6 @@ function Users({ refreshSignal }) {
         <div className={styles["preloader-wrapper"]}>
           <Preloader type="normal" />
         </div>
-      )}
-
-      {page < totalPages && !loading && (
-        <button className={styles.loadMoreButton} onClick={handleLoadMore}>
-          Load more
-        </button>
       )}
     </section>
   );
