@@ -69,7 +69,6 @@ function Users({ refreshSignal }) {
   };
 
   useEffect(() => {
-    console.log("Component mounted, запускаємо fetchUsers(true)");
     fetchUsers(true);
   }, []);
 
@@ -79,7 +78,7 @@ function Users({ refreshSignal }) {
     }
   }, [refreshSignal]);
 
-  const showMoreVisible = page < totalPages && apiUsers.length >= 6;
+  const showMoreVisible = page < totalPages && apiUsers.length < 47;
 
   return (
     <section id="users" className={styles["users-section"]}>
