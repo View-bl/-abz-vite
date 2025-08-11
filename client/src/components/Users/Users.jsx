@@ -20,23 +20,13 @@ function Users({ refreshSignal }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const mapUsers = (users) =>
-    users.map((user) => ({
-      id: user.id,
-      name: user.name,
-      avatar: user.photo,
-      details: `${positionNames[user.position_id] || "Unknown"}<br />${
-        user.email
-      }<br />${formatPhone(user.phone)}`,
-      registration_timestamp:
-        new Date(user.registration_timestamp).getTime() || 0,
-    }));
-
   const fetchUsers = async (reset = false) => {
     setLoading(true);
     setError(null);
+
     try {
       const pageToFetch = reset ? 1 : page + 1;
+
       const res = await fetch(
         `${API_BASE_URL}/api/users?page=${pageToFetch}&count=6`
       );
@@ -45,22 +35,32 @@ function Users({ refreshSignal }) {
       const data = await res.json();
 
       if (data.success) {
-        const fetchedUsers = mapUsers(data.users);
+        const fetchedUsers = data.users.map((user) => ({
+          id: user.id,
+          name: user.name,
+          avatar: user.photo,
+          details: `${positionNames[user.position_id] || "Unknown"}<br />${
+            user.email
+          }<br />${formatPhone(user.phone)}`,
+          registration_timestamp:
+            new Date(user.registration_timestamp).getTime() || 0,
+        }));
 
         if (reset) {
-          setApiUsers(
-            fetchedUsers.sort(
-              (a, b) => b.registration_timestamp - a.registration_timestamp
-            )
+          const sorted = [...fetchedUsers].sort(
+            (a, b) => b.registration_timestamp - a.registration_timestamp
           );
+          setApiUsers(sorted);
           setPage(1);
         } else {
-          setApiUsers((prev) =>
-            [...prev, ...fetchedUsers].sort(
+          setApiUsers((prev) => {
+            const combined = [...prev, ...fetchedUsers];
+            combined.sort(
               (a, b) => b.registration_timestamp - a.registration_timestamp
-            )
-          );
-          setPage((prev) => prev + 1);
+            );
+            return combined;
+          });
+          setPage(pageToFetch);
         }
 
         setTotalPages(data.total_pages);
@@ -73,37 +73,13 @@ function Users({ refreshSignal }) {
     }
   };
 
-  // Запит лише останнього користувача
-  const fetchLatestUser = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/users?page=1&count=1`);
-      if (!res.ok) throw new Error("Failed to fetch latest user");
-
-      const data = await res.json();
-      if (data.success && data.users.length > 0) {
-        const latestUser = mapUsers(data.users)[0];
-
-        setApiUsers((prev) => {
-          const exists = prev.some((u) => u.id === latestUser.id);
-          if (exists) return prev;
-          return [latestUser, ...prev].sort(
-            (a, b) => b.registration_timestamp - a.registration_timestamp
-          );
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching latest user:", error);
-    }
-  };
-
   useEffect(() => {
     fetchUsers(true);
   }, []);
 
-  // При додаванні користувача — перевіряємо базу і оновлюємо за датою
   useEffect(() => {
     if (refreshSignal) {
-      fetchLatestUser();
+      fetchUsers(true);
     }
   }, [refreshSignal]);
 
@@ -140,4 +116,3 @@ function Users({ refreshSignal }) {
 }
 
 export default Users;
-//
