@@ -60,7 +60,7 @@ router.get("/", async (req, res) => {
     }
 
     const users = await User.find()
-      .sort({ id: 1 })
+      .sort({ registration_timestamp: -1 })
       .skip((page - 1) * finalCount)
       .limit(finalCount)
       .select(
