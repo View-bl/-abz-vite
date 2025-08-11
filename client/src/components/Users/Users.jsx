@@ -46,19 +46,14 @@ function Users({ refreshSignal }) {
         }));
 
         if (reset) {
+          // Початкове завантаження — сортуємо за датою (нові зверху)
           fetchedUsers.sort(
             (a, b) => b.registration_timestamp - a.registration_timestamp
           );
           setApiUsers(fetchedUsers);
           setPage(1);
         } else {
-          setApiUsers((prev) => {
-            const combined = [...prev, ...fetchedUsers];
-            combined.sort(
-              (a, b) => b.registration_timestamp - a.registration_timestamp
-            );
-            return combined;
-          });
+          setApiUsers((prev) => [...prev, ...fetchedUsers]);
           setPage(pageToFetch);
         }
 
@@ -84,7 +79,7 @@ function Users({ refreshSignal }) {
     }
   }, [refreshSignal]);
 
-  const showMoreVisible = page < totalPages && apiUsers.length < 47;
+  const showMoreVisible = page < totalPages && apiUsers.length >= 6;
 
   return (
     <section id="users" className={styles["users-section"]}>
