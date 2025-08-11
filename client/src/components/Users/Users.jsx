@@ -46,7 +46,6 @@ function Users({ refreshSignal }) {
         }));
 
         if (reset) {
-          // Початкове завантаження — сортуємо за датою (нові зверху)
           fetchedUsers.sort(
             (a, b) => b.registration_timestamp - a.registration_timestamp
           );
@@ -70,6 +69,7 @@ function Users({ refreshSignal }) {
   };
 
   useEffect(() => {
+    console.log("Component mounted, запускаємо fetchUsers(true)");
     fetchUsers(true);
   }, []);
 
