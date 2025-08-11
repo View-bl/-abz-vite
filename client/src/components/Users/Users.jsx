@@ -42,7 +42,7 @@ function Users({ refreshSignal }) {
             user.email
           }<br />${formatPhone(user.phone)}`,
           registration_timestamp:
-            new Date(user.registration_timestamp).getTime() || 0,
+            new Date(user.registration_timestamp * 1000).getTime() || 0,
         }));
 
         if (reset) {
@@ -63,6 +63,8 @@ function Users({ refreshSignal }) {
         }
 
         setTotalPages(data.total_pages);
+      } else {
+        throw new Error("Failed to load users");
       }
     } catch (error) {
       console.error("Error fetching users:", error);
